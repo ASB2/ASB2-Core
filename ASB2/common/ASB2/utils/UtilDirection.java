@@ -86,8 +86,7 @@ public class UtilDirection {
         }
     }
 
-    public static TileEntity translateDirectionToTile(TileEntity tile,
-            World world, ForgeDirection direction) {
+    public static TileEntity translateDirectionToTile(TileEntity tile, IBlockAccess world, ForgeDirection direction) {
 
         return world.getBlockTileEntity(
                 UtilDirection.translateDirectionToCoords(direction, tile)[0],
@@ -95,45 +94,10 @@ public class UtilDirection {
                 UtilDirection.translateDirectionToCoords(direction, tile)[2]);
     }
 
-    public static TileEntity translateDirectionToTile(World world, ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
+    public static TileEntity translateDirectionToTile(IBlockAccess world, ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
 
         int[] coords = UtilDirection.translateDirectionToCoords(direction, xCoord, yCoord, zCoord);
         return world.getBlockTileEntity(coords[0], coords[1], coords[2]);
-    }
-
-    public static TileEntity[] getArrayTilesAround(World world, TileEntity tile) {
-
-        return new TileEntity[] {
-                UtilDirection.translateDirectionToTile(tile, world,
-                        ForgeDirection.DOWN),
-                UtilDirection.translateDirectionToTile(tile, world,
-                        ForgeDirection.UP),
-                UtilDirection.translateDirectionToTile(tile, world,
-                        ForgeDirection.NORTH),
-                UtilDirection.translateDirectionToTile(tile, world,
-                        ForgeDirection.SOUTH),
-                UtilDirection.translateDirectionToTile(tile, world,
-                        ForgeDirection.WEST),
-                UtilDirection.translateDirectionToTile(tile, world,
-                        ForgeDirection.EAST) };
-    }
-
-    public static TileEntity[] getArrayTilesAround(World world, int x, int y,
-            int z) {
-
-        return new TileEntity[] {
-                UtilDirection.translateDirectionToTile(world,
-                        ForgeDirection.DOWN, x, y, x),
-                UtilDirection.translateDirectionToTile(world,
-                        ForgeDirection.UP, x, y, x),
-                UtilDirection.translateDirectionToTile(world,
-                        ForgeDirection.NORTH, x, y, x),
-                UtilDirection.translateDirectionToTile(world,
-                        ForgeDirection.SOUTH, x, y, x),
-                UtilDirection.translateDirectionToTile(world,
-                        ForgeDirection.WEST, x, y, x),
-                UtilDirection.translateDirectionToTile(world,
-                        ForgeDirection.EAST, x, y, x) };
     }
 
     public static int getTilesNextTo(TileEntity tile, World worldObj) {
