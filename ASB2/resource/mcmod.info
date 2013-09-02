@@ -1,0 +1,24 @@
+[
+{
+  "modid": "ASB2-Core",
+  
+  "name": "ASB2-Core",
+  
+  "description": "The Core of My Creation",
+  
+  "version": "1",
+  
+  "credits": "Created by ASB2 for ASB2",
+  
+  "logoFile": "/assets/gearutilities/blank/gear.png",
+  
+  "mcversion": "1.5.2",
+  
+  "url": "",
+  "updateUrl": "",
+  "authors": ["ASB2"],
+  "parent":"",
+  "screenshots": [],
+  "dependencies": [ "MinecraftForge"]
+}
+]

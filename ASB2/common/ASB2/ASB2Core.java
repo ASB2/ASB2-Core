@@ -1,4 +1,4 @@
-package ASB2.utils;
+package ASB2;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

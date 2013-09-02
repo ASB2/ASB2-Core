@@ -95,16 +95,10 @@ public class UtilDirection {
                 UtilDirection.translateDirectionToCoords(direction, tile)[2]);
     }
 
-    public static TileEntity translateDirectionToTile(World world,
-            ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
+    public static TileEntity translateDirectionToTile(World world, ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
 
-        return world.getBlockTileEntity(
-                UtilDirection.translateDirectionToCoords(direction, xCoord,
-                        yCoord, zCoord)[0], UtilDirection
-                        .translateDirectionToCoords(direction, xCoord, yCoord,
-                                zCoord)[1], UtilDirection
-                        .translateDirectionToCoords(direction, xCoord, yCoord,
-                                zCoord)[2]);
+        int[] coords = UtilDirection.translateDirectionToCoords(direction, xCoord, yCoord, zCoord);
+        return world.getBlockTileEntity(coords[0], coords[1], coords[2]);
     }
 
     public static TileEntity[] getArrayTilesAround(World world, TileEntity tile) {

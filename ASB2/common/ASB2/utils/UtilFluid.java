@@ -3,10 +3,35 @@ package ASB2.utils;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 
 public final class UtilFluid {
+
+    public static boolean moveFluid(FluidTank source, ForgeDirection from, IFluidHandler destination, int amount, boolean doMove) {
+
+        boolean isSuccessful = false;
+
+        if(source != null && source.getFluid() != null && destination != null) {
+
+            if(UtilFluid.addFluidToTank(destination, from, source.getFluid(), false)) {
+
+                if(source.getFluidAmount() >= amount) {
+
+                    isSuccessful = true;
+
+                    if(doMove) {
+
+                        UtilFluid.addFluidToTank(destination, from, source.getFluid(), true);
+                        source.setCapacity(amount);
+                    }
+                }
+            }
+        }
+
+        return isSuccessful; 
+    }
 
     public static boolean moveFluid(IFluidHandler source, ForgeDirection from, IFluidHandler destination, int amount, boolean doMove) {
 
@@ -111,7 +136,7 @@ public final class UtilFluid {
             if(destination.getTankInfo(from) != null) {
 
                 if(destination.getTankInfo(from) != null) {
-                    
+
                     for (FluidTankInfo info : destination.getTankInfo(oppositeDirection)) {
 
                         if(info != null) {
