@@ -33,6 +33,30 @@ public final class UtilFluid {
         return isSuccessful; 
     }
 
+    public static boolean moveFluid(IFluidHandler source, ForgeDirection from, IFluidHandler destination, boolean doMove) {
+
+        int amount = 10000;
+        
+        while(true) {
+
+            if(!UtilFluid.moveFluid(source, from, destination, amount, doMove)) {
+                
+                if(amount >= 1000) {
+                    
+                    amount = amount - 1000;
+                }
+                else {
+                    
+                    return false;
+                }
+                
+            }
+            else {
+                
+                return true;
+            }
+        }
+    }
     public static boolean moveFluid(IFluidHandler source, ForgeDirection from, IFluidHandler destination, int amount, boolean doMove) {
 
         ForgeDirection oppositeDirection = from.getOpposite();

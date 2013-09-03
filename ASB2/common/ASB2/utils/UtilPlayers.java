@@ -10,6 +10,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import ASB2.vector.Vector3;
 
 public class UtilPlayers {
 
@@ -61,43 +62,21 @@ public class UtilPlayers {
 
     public static int[] getPayerCoords(Entity entity) {
 
-        Double x = entity.posX;
-        Double y = entity.posY;
-        Double z = entity.posZ;
-
-        int xCoord = x.intValue();
-        int yCoord = y.intValue();
-        int zCoord = z.intValue();
-
-        if (x.doubleValue() >= .7) {
-
-            xCoord = x.intValue() + 1;
-        }
-
-        if (y.doubleValue() >= .7) {
-
-            yCoord = y.intValue() + 1;
-        }
-
-        if (z.doubleValue() >= .7) {
-
-            zCoord = z.intValue() + 1;
-        }
-        return new int[] { xCoord, yCoord, zCoord };
+        Vector3 position = new Vector3(entity);
+        return new int[] {position.intX(), position.intY(), position.intX()};
     }
 
-    public static ForgeDirection getEntityDirection(Entity entity,
-            boolean useYaw) {
+    public static ForgeDirection getEntityDirection(Entity entity, boolean useYaw) {
 
-        int roatation = MathHelper
-                .floor_double(entity.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
+        int roatation = MathHelper.floor_double(entity.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
 
         if (!useYaw) {
 
             if (entity.rotationPitch >= 90 && entity.rotationPitch <= 180) {
 
                 return ForgeDirection.DOWN;
-            } else if (entity.rotationPitch <= 90) {
+            } 
+            else if (entity.rotationPitch <= 90) {
 
                 return ForgeDirection.UP;
             }
@@ -116,7 +95,7 @@ public class UtilPlayers {
         return ForgeDirection.UNKNOWN;
     }
 
-    public static void damagePlayer(World world, int x, int y, int z, Entity entity, DamageSource source, int damage) {
+    public static void damagePlayer(World world, Entity entity, DamageSource source, int damage) {
 
         if (entity instanceof EntityPlayer) {
 
@@ -124,7 +103,9 @@ public class UtilPlayers {
 
                 entity.attackEntityFrom(source, damage);
             }
-        } else {
+        } 
+        else {
+            
             entity.attackEntityFrom(source, damage);
         }
     }

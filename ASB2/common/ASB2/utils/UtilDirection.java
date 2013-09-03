@@ -1,60 +1,73 @@
 package ASB2.utils;
 
+import java.util.Random;
+
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
+import static net.minecraftforge.common.ForgeDirection.UP;
+import static net.minecraftforge.common.ForgeDirection.DOWN;
+import static net.minecraftforge.common.ForgeDirection.NORTH;
+import static net.minecraftforge.common.ForgeDirection.SOUTH;
+import static net.minecraftforge.common.ForgeDirection.WEST;
+import static net.minecraftforge.common.ForgeDirection.EAST;
+import static net.minecraftforge.common.ForgeDirection.UNKNOWN;
+
 public class UtilDirection {
 
-    public static int[] translateDirectionToCoords(ForgeDirection direction,
-            TileEntity tile) {
+    public static ForgeDirection translateDirectionToRandomRightAngle(ForgeDirection direction) {
 
-        return new int[] { tile.xCoord + direction.offsetX,
-                tile.yCoord + direction.offsetY,
-                tile.zCoord + direction.offsetZ };
+        int rand = new Random().nextInt(4);
+
+        if(direction == ForgeDirection.UP || direction == ForgeDirection.DOWN) {
+
+            switch(rand) {
+
+                case 0: return NORTH;
+                case 1: return SOUTH;
+                case 2: return WEST;
+                case 3: return EAST;
+                default: return UNKNOWN;
+            }
+        }        
+
+        if(direction == ForgeDirection.NORTH || direction == ForgeDirection.SOUTH) {
+
+            switch(rand) {
+
+                case 0: return UP;
+                case 1: return DOWN;
+                case 2: return WEST;
+                case 3: return EAST;
+                default: return UNKNOWN;
+            }
+        } 
+        
+        if(direction == ForgeDirection.WEST || direction == ForgeDirection.EAST) {
+
+            switch(rand) {
+
+                case 0: return UP;
+                case 1: return DOWN;
+                case 2: return NORTH;
+                case 3: return SOUTH;
+                default: return UNKNOWN;
+            }
+        } 
+        return ForgeDirection.UNKNOWN;
+
     }
 
-    public static int[] translateDirectionToCoords(ForgeDirection direction,
-            int xCoord, int yCoord, int zCoord) {
+    public static int[] translateDirectionToCoords(ForgeDirection direction, TileEntity tile) {
 
-        return new int[] { xCoord + direction.offsetX,
-                yCoord + direction.offsetY, zCoord + direction.offsetZ };
+        return new int[] { tile.xCoord + direction.offsetX, tile.yCoord + direction.offsetY, tile.zCoord + direction.offsetZ };
     }
 
-    public static int translateDirectionToNumber(ForgeDirection direction) {
+    public static int[] translateDirectionToCoords(ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
 
-        switch (direction) {
-
-            case DOWN: {
-
-                return 0;
-            }
-            case UP: {
-
-                return 1;
-            }
-            case NORTH: {
-
-                return 2;
-            }
-            case SOUTH: {
-
-                return 3;
-            }
-            case WEST: {
-
-                return 4;
-            }
-            case EAST: {
-
-                return 5;
-            }
-            default: {
-
-                return -1;
-            }
-        }
+        return new int[] { xCoord + direction.offsetX, yCoord + direction.offsetY, zCoord + direction.offsetZ };
     }
 
     public static String translateDirectionToString(ForgeDirection direction) {

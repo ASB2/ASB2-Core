@@ -63,6 +63,52 @@ public class UtilInventory {
         }
         return false;
     }
+    
+    public static boolean removeItemStackFromInventory(IInventory destination, ItemStack itemStack, int amount, boolean doWork) {
+
+        if (itemStack != null) {
+
+            for (int i = 0; i < destination.getSizeInventory(); i++) {
+
+                if(UtilInventory.removeItemStackFromSlot(destination, itemStack, i, amount, doWork)) {
+
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean removeItemStackFromSlot(IInventory source, ItemStack itemStack, int slot, int amount, boolean doWork) {
+
+        if(source != null && itemStack != null) {
+
+            ItemStack stack = source.getStackInSlot(slot);
+
+            if (stack == null) {
+                
+                return false;
+            } 
+            else {
+
+                if(stack.isItemEqual(itemStack)) {
+
+                    if(doWork) {
+                        
+                        return UtilInventory.decreaseSlotContentsBoolean(source, slot, amount);
+                    }
+                    else {
+                        
+                        if(stack.stackSize - itemStack.stackSize >= 0) {
+                            
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     public static boolean hasItemStack(IInventory inventory, ItemStack stack) {
 
@@ -88,7 +134,7 @@ public class UtilInventory {
 
             for (int i = 0; i < inventory.getSizeInventory(); i++) {
 
-                ItemStack slotStack = inventory.getStackInSlot(i);
+                ItemStack slotStack = inventory.getStackInSlot(i).copy();
 
                 if (slotStack != null) {
 
@@ -110,13 +156,13 @@ public class UtilInventory {
 
             if (source.getStackInSlot(sourceSlot) != null) {
 
+                ItemStack sourceStack = source.getStackInSlot(sourceSlot).copy();
+                
                 for (int destinationSlot = 0; destinationSlot < destination.getSizeInventory(); destinationSlot++) {
 
-                    ItemStack sourceStack = source.getStackInSlot(sourceSlot);
+                    if(UtilInventory.addItemStackToSlot(destination, sourceStack, destinationSlot, false) && UtilInventory.removeItemStackFromInventory(source, sourceStack, sourceStack.stackSize, false)) {
 
-                    if(UtilInventory.addItemStackToSlot(destination, sourceStack, destinationSlot, false)) {
-
-                        itWorked = UtilInventory.addItemStackToSlot(destination, sourceStack, destinationSlot, true);
+                        itWorked = UtilInventory.addItemStackToSlot(destination, sourceStack, destinationSlot, true) && UtilInventory.removeItemStackFromInventory(source, sourceStack, sourceStack.stackSize, true);
                     }
                 }
             }
