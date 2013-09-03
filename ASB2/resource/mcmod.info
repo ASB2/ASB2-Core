@@ -4,15 +4,15 @@
   
   "name": "ASB2-Core",
   
-  "description": "The Core of My Creation",
+  "description": "The Core of My Creations",
   
-  "version": "1",
+  "version": "1.0.0",
   
   "credits": "Created by ASB2 for ASB2",
   
   "logoFile": "/assets/gearutilities/blank/gear.png",
   
-  "mcversion": "1.5.2",
+  "mcversion": "1.6.2",
   
   "url": "",
   "updateUrl": "",

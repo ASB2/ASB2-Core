@@ -13,7 +13,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 
-@Mod(modid =ASB2Core.MODDID, name = ASB2Core.NAME, version = ASB2Core.VERSION, dependencies = "required-after:Forge@[7.7.1.829,)")
+@Mod(modid = ASB2Core.MODDID, name = ASB2Core.NAME, version = ASB2Core.VERSION, dependencies = ASB2Core.FORGE_VERSION)
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 
 public final class ASB2Core {
@@ -21,6 +21,7 @@ public final class ASB2Core {
     public static final String MODDID = "ASB2-Core";
     public static final String NAME = "ASB2-Core";
     public static final String VERSION = "1.0.0";
+    public static final String FORGE_VERSION = "required-after:Forge@[7.7.1.829,)";
     
     @Instance(ASB2Core.MODDID)
     public static ASB2Core instance;
