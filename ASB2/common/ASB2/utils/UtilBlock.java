@@ -13,6 +13,17 @@ import net.minecraftforge.common.ForgeDirection;
 
 public class UtilBlock {
 
+    public static boolean rotateBlock(World world, int x, int y, int z, ForgeDirection face) {
+    
+        Block block = Block.blocksList[world.getBlockId(x, y, z)];
+        
+        if(block != null) {
+            
+            return block.rotateBlock(world, x, y, z, face);
+        }
+        return false;
+    }
+    
     public static boolean placeBlockInAir(World world, int x, int y, int z, int blockId, int metaData) {
 
         if (world.getBlockId(x, y, z) == 0) {
