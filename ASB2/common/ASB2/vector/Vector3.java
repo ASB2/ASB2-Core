@@ -222,6 +222,22 @@ public class Vector3 implements Cloneable {
         this.z += par1;
         return this;
     }
+    
+    public Vector3 add(double x, double y, double z) {
+
+        this.x += x;
+        this.y += y;
+        this.z += z;
+        return this;
+    }
+    
+    public Vector3 add(ForgeDirection direction) {
+
+        this.x += direction.offsetX;
+        this.y += direction.offsetY;
+        this.z += direction.offsetZ;
+        return this;
+    }
 
     public Vector3 subtract(Vector3 amount) {
 

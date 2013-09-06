@@ -3,8 +3,8 @@ package ASB2.utils;
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.IBlockAccess;
@@ -156,7 +156,7 @@ public class UtilBlock {
         }
     }
 
-    public static boolean cycle2DBlock(EntityPlayer player, World world, int x, int y, int z, ForgeDirection side, int radius, IBlockCycle cycle, int id) {
+    public static boolean cycle2DBlock(EntityLivingBase player, World world, int x, int y, int z, ForgeDirection side, int radius, IBlockCycle cycle, int id) {
 
         boolean isSuccessful = false;
 
@@ -203,7 +203,7 @@ public class UtilBlock {
      * Sends the coordinates of every block within a certain radius
      */
 
-    public static boolean cycle3DBlock(EntityPlayer player, World world, int x, int y, int z, ForgeDirection side, int radius, IBlockCycle cycle, int id) {
+    public static boolean cycle3DBlock(EntityLivingBase player, World world, int x, int y, int z, ForgeDirection side, int radius, IBlockCycle cycle, int id) {
         boolean isSuccessful = false;
 
         if (side.offsetX != 0) {
@@ -238,7 +238,7 @@ public class UtilBlock {
         return isSuccessful;
     }
 
-    public static boolean cycle3DBlock(EntityPlayer player, World world, int x, int y, int z, ForgeDirection side, int radius, int distance, IBlockCycle cycle, int id) {
+    public static boolean cycle3DBlock(EntityLivingBase player, World world, int x, int y, int z, ForgeDirection side, int radius, int distance, IBlockCycle cycle, int id) {
         boolean isSuccessful = false;
 
         for (int i = 0; i < distance; i++) {

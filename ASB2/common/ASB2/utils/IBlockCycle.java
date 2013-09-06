@@ -1,11 +1,10 @@
 package ASB2.utils;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
 public interface IBlockCycle {
 
-    public boolean execute(EntityPlayer player, World world, int x, int y,
-            int z, ForgeDirection side, int id);
+    public boolean execute(EntityLivingBase player, World world, int x, int y, int z, ForgeDirection side, int id);
 }

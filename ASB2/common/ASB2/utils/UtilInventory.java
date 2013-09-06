@@ -1,10 +1,65 @@
 package ASB2.utils;
 
+import java.util.ArrayList;
+
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.World;
 
 public class UtilInventory {
+
+    public static int useFuel(IInventory inventory, int targetFuelAmount) {
+
+        ArrayList<ItemStack> fuels = UtilInventory.getFuelsInInventory(inventory);        
+        ArrayList<ItemStack> toRemove = new ArrayList<ItemStack>();
+
+        int burnTime = 0;
+
+        for(ItemStack stack : fuels) {
+
+            if(burnTime < targetFuelAmount) {
+
+                burnTime += TileEntityFurnace.getItemBurnTime(stack);
+                toRemove.add(stack);
+            }
+            else {
+                
+                break;
+            }
+        }
+        
+        for(ItemStack stack : fuels) {
+            
+            UtilInventory.removeItemStackFromInventory(inventory, stack, stack.stackSize, true);            
+        }
+        return burnTime;
+    }
+
+    public static ItemStack smeltItemStack(ItemStack stack) {
+
+        return FurnaceRecipes.smelting().getSmeltingResult(stack);
+    }
+
+    public static ArrayList<ItemStack> getFuelsInInventory(IInventory inventory) {
+
+        ArrayList<ItemStack> array = new ArrayList<ItemStack>();
+
+        for(int i = 0; i < inventory.getSizeInventory(); i++) {
+
+            ItemStack stack = inventory.getStackInSlot(i);
+
+            if(stack != null) {
+
+                if(TileEntityFurnace.getItemBurnTime(stack) > 0) {
+
+                    array.add(stack);
+                }
+            }
+        }
+        return array;
+    }
 
     public static boolean addItemStackToInventoryAndSpawnExcess(World world, IInventory destination, ItemStack itemStack, int x, int y, int z) {
 
@@ -48,13 +103,13 @@ public class UtilInventory {
                 if(stack.isItemEqual(itemStack)) {
 
                     if(doWork) {
-                        
+
                         return UtilInventory.increaseSlotContents(destination, slot, itemStack.stackSize);
                     }
                     else {
-                        
+
                         if(stack.stackSize + itemStack.stackSize <= destination.getInventoryStackLimit()) {
-                            
+
                             return true;
                         }
                     }
@@ -63,7 +118,7 @@ public class UtilInventory {
         }
         return false;
     }
-    
+
     public static boolean removeItemStackFromInventory(IInventory destination, ItemStack itemStack, int amount, boolean doWork) {
 
         if (itemStack != null) {
@@ -86,7 +141,7 @@ public class UtilInventory {
             ItemStack stack = source.getStackInSlot(slot);
 
             if (stack == null) {
-                
+
                 return false;
             } 
             else {
@@ -94,13 +149,13 @@ public class UtilInventory {
                 if(stack.isItemEqual(itemStack)) {
 
                     if(doWork) {
-                        
+
                         return UtilInventory.decreaseSlotContentsBoolean(source, slot, amount);
                     }
                     else {
-                        
+
                         if(stack.stackSize - itemStack.stackSize >= 0) {
-                            
+
                             return true;
                         }
                     }
@@ -152,17 +207,20 @@ public class UtilInventory {
 
         boolean itWorked = false;
 
-        for (int sourceSlot = 0; sourceSlot < source.getSizeInventory(); sourceSlot++) {
+        if(source != destination) {
 
-            if (source.getStackInSlot(sourceSlot) != null) {
+            for (int sourceSlot = 0; sourceSlot < source.getSizeInventory(); sourceSlot++) {
 
-                ItemStack sourceStack = source.getStackInSlot(sourceSlot).copy();
-                
-                for (int destinationSlot = 0; destinationSlot < destination.getSizeInventory(); destinationSlot++) {
+                if (source.getStackInSlot(sourceSlot) != null) {
 
-                    if(UtilInventory.addItemStackToSlot(destination, sourceStack, destinationSlot, false) && UtilInventory.removeItemStackFromInventory(source, sourceStack, sourceStack.stackSize, false)) {
+                    ItemStack sourceStack = source.getStackInSlot(sourceSlot).copy();
 
-                        itWorked = UtilInventory.addItemStackToSlot(destination, sourceStack, destinationSlot, true) && UtilInventory.removeItemStackFromInventory(source, sourceStack, sourceStack.stackSize, true);
+                    for (int destinationSlot = 0; destinationSlot < destination.getSizeInventory(); destinationSlot++) {
+
+                        if(UtilInventory.addItemStackToSlot(destination, sourceStack, destinationSlot, false) && UtilInventory.removeItemStackFromInventory(source, sourceStack, sourceStack.stackSize, false)) {
+
+                            itWorked = UtilInventory.addItemStackToSlot(destination, sourceStack, destinationSlot, true) && UtilInventory.removeItemStackFromInventory(source, sourceStack, sourceStack.stackSize, true);
+                        }
                     }
                 }
             }
