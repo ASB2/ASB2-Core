@@ -14,16 +14,16 @@ import net.minecraftforge.common.ForgeDirection;
 public class UtilBlock {
 
     public static boolean rotateBlock(World world, int x, int y, int z, ForgeDirection face) {
-    
+
         Block block = Block.blocksList[world.getBlockId(x, y, z)];
-        
+
         if(block != null) {
-            
+
             return block.rotateBlock(world, x, y, z, face);
         }
         return false;
     }
-    
+
     public static boolean placeBlockInAir(World world, int x, int y, int z, int blockId, int metaData) {
 
         if (world.getBlockId(x, y, z) == 0) {
@@ -54,9 +54,9 @@ public class UtilBlock {
         for(ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 
             int temp = world.isBlockProvidingPowerTo(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ, direction.getOpposite().ordinal());
-         
+
             if(temp > highest) {
-                
+
                 highest = temp;
             }
         }
@@ -90,13 +90,61 @@ public class UtilBlock {
             world.setBlockToAir(x, y, z);
         }
     }
+    public static boolean breakAndAddToInventoryWithCheck(IInventory inventory, World world, int x, int y, int z, boolean doWork) {
+        
+        return false;
+    }
+    
+    public static boolean breakAndAddToInventory(IInventory inventory, World world, int x, int y, int z, boolean doWork) {
 
-    public static void breakAndAddToInventory(IInventory inventory, World world, int x, int y, int z, int fortune, boolean dropExtra) {
+        boolean itWorked = false;
+        boolean canDo = false;
+
+        if (world.getBlockId(x, y, z) != 0 && !(Block.blocksList[world.getBlockId(x, y, z)].getBlockHardness(world, x, y, z) < 0)) {
+
+            Block block = Block.blocksList[world.getBlockId(x, y, z)];
+
+            ArrayList<ItemStack> items = block.getBlockDropped(world, x, y, z, world.getBlockMetadata(x, y, z), 1);
+
+            if(!items.isEmpty()) {
+
+                for (ItemStack item : items) {
+
+                        if (inventory != null) {
+
+                            canDo = UtilInventory.addItemStackToInventory(inventory, item, false);
+                        }
+                }
+
+                if(canDo) {
+
+                    for (ItemStack item : items) {
+
+                            if (inventory != null) {
+
+                                itWorked = UtilInventory.addItemStackToInventory(inventory, item, doWork);
+                            }
+                    }
+                }
+
+                if(doWork && canDo && itWorked) {
+                    
+                    world.playAuxSFX(2001, x, y, z, world.getBlockId(x, y, z) + (world.getBlockMetadata(x, y, z) << 12));
+                    world.setBlockToAir(x, y, z);
+                }
+            }
+        }
+        return itWorked;
+    }
+
+    public static boolean breakAndAddToInventorySpawnExcess(IInventory inventory, World world, int x, int y, int z, int fortune, boolean dropExtra) {
+
+        boolean itWorked = false;
 
         if(fortune <= 0)
             fortune = 1;
 
-        if (world.getBlockId(x, y, z) != 0) {
+        if (world.getBlockId(x, y, z) != 0 && !(Block.blocksList[world.getBlockId(x, y, z)].getBlockHardness(world, x, y, z) == -1)) {
 
             Block block = Block.blocksList[world.getBlockId(x, y, z)];
 
@@ -115,7 +163,12 @@ public class UtilBlock {
                                 UtilBlock.spawnItemStackEntity(world, x, y, z, item, 1);
                             }
                         }
-                    } else if(dropExtra) {
+                        else {
+
+                            itWorked = true;
+                        }
+                    } 
+                    else if(dropExtra) {
 
                         UtilBlock.spawnItemStackEntity(world, x, y, z, item, 1);
                     }
@@ -125,6 +178,7 @@ public class UtilBlock {
             world.playAuxSFX( 2001, x, y, z, world.getBlockId(x, y, z) + (world.getBlockMetadata(x, y, z) << 12));
             world.setBlockToAir(x, y, z);
         }
+        return itWorked;
     }
 
     public static ArrayList<ItemStack> getItemStackDropped(World world, int x, int y, int z, int fortune) {
