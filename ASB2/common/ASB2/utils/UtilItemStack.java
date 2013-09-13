@@ -70,8 +70,7 @@ public class UtilItemStack {
         return 0;
     }
 
-    public static void setNBTTagDouble(ItemStack itemStack, String tag,
-            int value) {
+    public static void setNBTTagDouble(ItemStack itemStack, String tag, double value) {
 
         NBTTagCompound nbtTagCompound = UtilItemStack.getTAGfromItemstack(itemStack);
         nbtTagCompound.setDouble(tag, value);
@@ -84,6 +83,23 @@ public class UtilItemStack {
         if (nbtTagCompound != null) {
 
             return nbtTagCompound.getDouble(tag);
+        }
+        return 0;
+    }
+    
+    public static void setNBTTagFloat(ItemStack itemStack, String tag, float value) {
+
+        NBTTagCompound nbtTagCompound = UtilItemStack.getTAGfromItemstack(itemStack);
+        nbtTagCompound.setFloat(tag, value);
+    }
+
+    public static float getNBTTagFloat(ItemStack itemStack, String tag) {
+
+        NBTTagCompound nbtTagCompound = UtilItemStack.getTAGfromItemstack(itemStack);
+
+        if (nbtTagCompound != null) {
+
+            return nbtTagCompound.getFloat(tag);
         }
         return 0;
     }

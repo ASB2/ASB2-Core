@@ -196,7 +196,7 @@ public class UtilBlock {
         return new ArrayList<ItemStack>();
     }
 
-    public static void spawnItemStackEntity(World world, int x, int y, int z, ItemStack item, int delayforPickup) {
+    public static void spawnItemStackEntity(World world, double x, double y, double z, ItemStack item, int delayforPickup) {
 
         if (world.getGameRules().getGameRuleBooleanValue("doTileDrops") && !world.isRemote) {
 
