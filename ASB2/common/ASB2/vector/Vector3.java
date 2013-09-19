@@ -134,6 +134,15 @@ public class Vector3 implements Cloneable {
         return world.getBlockTileEntity(this.intX(), this.intY(), this.intZ());
     }
 
+    public TileEntity getTileEntity(World world) {
+
+        if(world.blockExists(this.intX(), this.intY(), this.intZ())) {
+
+            return world.getBlockTileEntity(this.intX(), this.intY(), this.intZ());
+        }
+        else return null;
+    }
+
     public boolean setBlock(World world, int id, int metadata, int notify) {
 
         return world.setBlock(this.intX(), this.intY(), this.intZ(), id, metadata, notify);
@@ -222,7 +231,7 @@ public class Vector3 implements Cloneable {
         this.z += par1;
         return this;
     }
-    
+
     public Vector3 add(double x, double y, double z) {
 
         this.x += x;
@@ -230,7 +239,7 @@ public class Vector3 implements Cloneable {
         this.z += z;
         return this;
     }
-    
+
     public Vector3 add(ForgeDirection direction) {
 
         this.x += direction.offsetX;

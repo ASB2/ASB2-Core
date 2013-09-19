@@ -3,6 +3,7 @@ package ASB2.utils;
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
@@ -28,6 +29,10 @@ public class UtilBlock {
 
         if (world.getBlockId(x, y, z) == 0) {
 
+            return world.setBlock(x, y, z, blockId, metaData, 3);
+        }
+        if(world.getBlockMaterial(x,y,z) == Material.air || world.getBlockMaterial(x,y,z).isReplaceable()) {
+            
             return world.setBlock(x, y, z, blockId, metaData, 3);
         }
         return false;

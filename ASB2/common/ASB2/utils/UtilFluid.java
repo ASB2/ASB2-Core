@@ -65,7 +65,7 @@ public final class UtilFluid {
 
         if(source != null && destination != null) {
 
-            if(destination.getTankInfo(from) != null) {
+            if(destination.getTankInfo(from) != null && source.getTankInfo(from) != null) {
 
                 for (FluidTankInfo info : source.getTankInfo(from)) {
 
@@ -91,6 +91,15 @@ public final class UtilFluid {
                                             UtilFluid.removeFluidFromTank(source, oppositeDirection, fluidToMove, true);
                                         }
                                     }
+                                    
+                                    else {
+                                        
+                                        isSuccessful = false;
+                                    }
+                                }
+                                else {
+                                    
+                                    isSuccessful = false;
                                 }
                             }
                         }
@@ -102,8 +111,6 @@ public final class UtilFluid {
     }
 
     public static boolean addFluidToTank(IFluidHandler destination, ForgeDirection from, FluidStack fluid, boolean doMove) {
-
-        boolean itWorked = false;
 
         ForgeDirection oppositeDirection = from.getOpposite();
 
@@ -118,8 +125,7 @@ public final class UtilFluid {
                         if(info.fluid != null) {
 
                             if(!(info.fluid.isFluidEqual(fluid))) {
-
-                                itWorked = false;
+                                
                                 break;
                             }                        
                         }
@@ -132,17 +138,13 @@ public final class UtilFluid {
                                     destination.fill(oppositeDirection, fluid, true);
 
                                 return true;
-                            } 
-                            else {
-
-                                itWorked = false;
                             }
                         } 
                     }
                 }
             }
         }
-        return itWorked;
+        return false;
     }
 
     public static boolean removeFluidFromTank(IFluidHandler destination, ForgeDirection from, Fluid fluid, int amount, boolean doMove) {

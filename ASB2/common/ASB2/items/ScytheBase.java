@@ -35,7 +35,11 @@ public class ScytheBase extends ToolBase implements IBlockCycle {
             itemStack.damageItem(1, entity);
         }
 
-        UtilBlock.cycle3DBlock(entity, world, x, y, z, ForgeDirection.DOWN, 5, this, 0);
+        if(Block.blocksList[id] != null && Block.blocksList[id].blockMaterial  != null && (Block.blocksList[id].blockMaterial == Material.leaves || Block.blocksList[id].blockMaterial == Material.plants)) {
+            
+
+            UtilBlock.cycle3DBlock(entity, world, x, y, z, ForgeDirection.DOWN, 5, this, 0);
+        }
         return true;
     }
 
@@ -46,7 +50,7 @@ public class ScytheBase extends ToolBase implements IBlockCycle {
 
             if(Block.blocksList[world.getBlockId(x, y, z)].blockMaterial != null) {            
 
-                if(Block.blocksList[world.getBlockId(x, y, z)].blockMaterial == Material.leaves) {
+                if(Block.blocksList[world.getBlockId(x, y, z)].blockMaterial == Material.leaves || Block.blocksList[world.getBlockId(x, y, z)].blockMaterial == Material.plants) {
 
                     UtilBlock.breakBlock(world, x, y, z);
                 }

@@ -6,6 +6,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.Icon;
 import net.minecraft.util.ResourceLocation;
@@ -18,16 +19,19 @@ import cpw.mods.fml.client.FMLClientHandler;
 
 public final class UtilRender {
 
+    public static RenderItem renderItemInstance = new RenderItem();
+    public static RenderBlocks renderBlockInstance = new RenderBlocks();
+    
     public static void renderIcon(int x, int y, Icon icon, int width, int height) {
 
         int zLevel = 1;
 
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV((double)(x + 0), (double)(y + height), (double)zLevel, (double)icon.getMinU(), (double)icon.getMaxV());
-        tessellator.addVertexWithUV((double)(x + width), (double)(y + height), (double)zLevel, (double)icon.getMaxU(), (double)icon.getMaxV());
-        tessellator.addVertexWithUV((double)(x + width), (double)(y + 0), (double)zLevel, (double)icon.getMaxU(), (double)icon.getMinV());
-        tessellator.addVertexWithUV((double)(x + 0), (double)(y + 0), (double)zLevel, (double)icon.getMinU(), (double)icon.getMinV());
+        tessellator.addVertexWithUV(x + 0, y + height, zLevel, icon.getMinU(), icon.getMaxV());
+        tessellator.addVertexWithUV(x + width, y + height, zLevel, icon.getMaxU(), icon.getMaxV());
+        tessellator.addVertexWithUV(x + width, y + 0, zLevel, icon.getMaxU(), icon.getMinV());
+        tessellator.addVertexWithUV(x + 0, y + 0, zLevel, icon.getMinU(), icon.getMinV());
         tessellator.draw();
     }
 

@@ -25,13 +25,13 @@ public class UtilInventory {
                 toRemove.add(stack);
             }
             else {
-                
+
                 break;
             }
         }
-        
+
         for(ItemStack stack : fuels) {
-            
+
             UtilInventory.removeItemStackFromInventory(inventory, stack, stack.stackSize, true);            
         }
         return burnTime;
@@ -89,28 +89,31 @@ public class UtilInventory {
 
         if(destination != null && itemStack != null) {
 
-            ItemStack stack = destination.getStackInSlot(slot);
+            if(destination.isItemValidForSlot(slot, itemStack)) {
 
-            if (stack == null) {
+                ItemStack stack = destination.getStackInSlot(slot);
 
-                if(doWork)
-                    destination.setInventorySlotContents(slot, itemStack);
+                if (stack == null) {
 
-                return true;
-            } 
-            else {
+                    if(doWork)
+                        destination.setInventorySlotContents(slot, itemStack);
 
-                if(stack.isItemEqual(itemStack)) {
+                    return true;
+                } 
+                else {
 
-                    if(doWork) {
+                    if(stack.isItemEqual(itemStack)) {
 
-                        return UtilInventory.increaseSlotContents(destination, slot, itemStack.stackSize);
-                    }
-                    else {
+                        if(doWork) {
 
-                        if(stack.stackSize + itemStack.stackSize <= destination.getInventoryStackLimit()) {
+                            return UtilInventory.increaseSlotContents(destination, slot, itemStack.stackSize);
+                        }
+                        else {
 
-                            return true;
+                            if(stack.stackSize + itemStack.stackSize <= destination.getInventoryStackLimit()) {
+
+                                return true;
+                            }
                         }
                     }
                 }
