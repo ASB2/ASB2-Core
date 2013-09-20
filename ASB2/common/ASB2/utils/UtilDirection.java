@@ -2,6 +2,8 @@ package ASB2.utils;
 
 import java.util.Random;
 
+import ASB2.vector.Vector3;
+
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -105,6 +107,12 @@ public class UtilDirection {
                 UtilDirection.translateDirectionToCoords(direction, tile)[0],
                 UtilDirection.translateDirectionToCoords(direction, tile)[1],
                 UtilDirection.translateDirectionToCoords(direction, tile)[2]);
+    }
+    
+    public static TileEntity translateDirectionToTile(Vector3 vector, IBlockAccess world, ForgeDirection direction) {
+
+        int[] coords = UtilDirection.translateDirectionToCoords(direction, vector.intX(), vector.intY(), vector.intZ());
+        return world.getBlockTileEntity(coords[0], coords[1], coords[2]);
     }
 
     public static TileEntity translateDirectionToTile(IBlockAccess world, ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
