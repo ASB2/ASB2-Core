@@ -157,4 +157,21 @@ public class UtilItemStack {
         }
         return itemList;
     }
+    
+    public static void setNBTTagString(ItemStack itemStack, String tag, String value) {
+
+        NBTTagCompound nbtTagCompound = UtilItemStack.getTAGfromItemstack(itemStack);
+        nbtTagCompound.setString(tag, value);
+    }
+
+    public static String getNBTTagString(ItemStack itemStack, String tag) {
+
+        NBTTagCompound nbtTagCompound = UtilItemStack.getTAGfromItemstack(itemStack);
+
+        if (nbtTagCompound != null) {
+
+            return nbtTagCompound.getString(tag);
+        }
+        return "";
+    }
 }

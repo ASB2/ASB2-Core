@@ -2,6 +2,7 @@ package ASB2.vector;
 
 import java.util.List;
 
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -28,6 +29,13 @@ public class Vector3 implements Cloneable {
 
     public Vector3() {
         this(0, 0, 0);
+    }
+
+    public Vector3(int[] coords) {
+
+        this.x = coords[0];
+        this.y = coords[1];
+        this.z = coords[2];
     }
 
     public Vector3(double x, double y, double z) {
@@ -124,6 +132,15 @@ public class Vector3 implements Cloneable {
         return world.getBlockId(this.intX(), this.intY(), this.intZ());
     }
 
+    public int getBlockID(World world) {
+
+        if(world.blockExists(this.intX(), this.intY(), this.intZ())) {
+
+            return world.getBlockId(this.intX(), this.intY(), this.intZ());
+        }
+        return 0;
+    }
+
     public int getBlockMetadata(IBlockAccess world) {
 
         return world.getBlockMetadata(this.intX(), this.intY(), this.intZ());
@@ -140,7 +157,23 @@ public class Vector3 implements Cloneable {
 
             return world.getBlockTileEntity(this.intX(), this.intY(), this.intZ());
         }
-        else return null;
+        else
+            return null;
+    }
+
+    public Material getBlockMaterial(IBlockAccess world) {
+
+        return world.getBlockMaterial(this.intX(), this.intY(), this.intZ());
+    }
+
+    public Material getBlockMaterial(World world) {
+
+        if(world.blockExists(this.intX(), this.intY(), this.intZ())) {
+
+            return world.getBlockMaterial(this.intX(), this.intY(), this.intZ());
+        }
+        else
+            return null;
     }
 
     public boolean setBlock(World world, int id, int metadata, int notify) {
@@ -188,7 +221,7 @@ public class Vector3 implements Cloneable {
 
         double d = getMagnitude();
 
-        if (d != 0) {
+        if(d != 0) {
 
             multiply(1 / d);
         }
@@ -281,9 +314,9 @@ public class Vector3 implements Cloneable {
         return this;
     }
 
-    public static Vector3 subtract(Vector3 par1, Vector3 par2) {
+    public static Vector3 subtract(Vector3 vec1, Vector3 vec2) {
 
-        return new Vector3(par1.x - par2.x, par1.y - par2.y, par1.z - par2.z);
+        return new Vector3(vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z);
     }
 
     public static Vector3 add(Vector3 par1, Vector3 par2) {
@@ -327,7 +360,6 @@ public class Vector3 implements Cloneable {
     @SuppressWarnings("unchecked")
     public List<Entity> getEntitiesWithin(World worldObj, Class<? extends Entity> entityClass) {
 
-
         return worldObj.getEntitiesWithinAABB(entityClass, AxisAlignedBB.getBoundingBox(this.intX(), this.intY(), this.intZ(), this.intX() + 1, this.intY() + 1, this.intZ() + 1));
     }
 
@@ -342,7 +374,7 @@ public class Vector3 implements Cloneable {
      */
     public Vector3 modifyPositionFromSide(ForgeDirection side, double amount) {
 
-        switch (side.ordinal()) {
+        switch(side.ordinal()) {
             case 0:
                 this.y -= amount;
                 break;
@@ -408,18 +440,22 @@ public class Vector3 implements Cloneable {
     @Override
     public boolean equals(Object object) {
 
-        if (object instanceof Vector3) {
+        if(object instanceof Vector3) {
 
-            Vector3 vector3 = (Vector3)object;
+            Vector3 vector3 = (Vector3) object;
             return this.x == vector3.x && this.y == vector3.y && this.z == vector3.z;
         }
-
         return false;
+    }
+
+    public boolean intEquals(Vector3 vec) {
+
+        return this.intX() == vec.intX() && this.intY() == vec.intY() && this.intZ() == vec.intZ();
     }
 
     @Override
     public String toString() {
 
-        return "Vector3 [" + this.x + "," + this.y + "," + this.z + "]";
+        return "Vector3 [ X: " + this.x + ", Y: " + this.y + ", Z: " + this.z + "]";
     }
 }

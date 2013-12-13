@@ -3,6 +3,7 @@ package ASB2.utils;
 import java.util.ArrayList;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFluid;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -13,6 +14,40 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
 public class UtilBlock {
+
+    public static boolean isWaterInfine(World world, int x, int y, int z) {
+    
+        int around = 0;
+        
+        if(world.getBlockId(x, y, z) == Block.waterStill.blockID) {
+            
+            for(ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+                
+                if(world.getBlockId(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ) == Block.waterStill.blockID) {
+                    
+                    around++;
+                }
+            }
+        }
+        return around >= 2;
+    }
+    
+    public static boolean isBreakable(World world, int x, int y, int z) {
+
+        Block block = Block.blocksList[world.getBlockId(x, y, z)];
+
+        if(block != null && !UtilBlock.isBlockAir(world, x, y, z)) {
+
+            if(!(block instanceof BlockFluid)) {
+
+                if(block.blockHardness != -1) {
+
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public static boolean rotateBlock(World world, int x, int y, int z, ForgeDirection face) {
 
@@ -25,14 +60,28 @@ public class UtilBlock {
         return false;
     }
 
+    public static boolean isBlockAir(World world, int x, int y, int z) {
+
+        if(world.getBlockId(x, y, z) == 0) {
+
+            return true;
+        }
+
+        if(world.getBlockMaterial(x, y, z) == Material.air) {
+
+            return true;
+        }
+        return false;
+    }
+
     public static boolean placeBlockInAir(World world, int x, int y, int z, int blockId, int metaData) {
 
-        if (world.getBlockId(x, y, z) == 0) {
+        if(world.getBlockId(x, y, z) == 0) {
 
             return world.setBlock(x, y, z, blockId, metaData, 3);
         }
-        if(world.getBlockMaterial(x,y,z) == Material.air || world.getBlockMaterial(x,y,z).isReplaceable()) {
-            
+        if(world.getBlockMaterial(x, y, z) == Material.air || world.getBlockMaterial(x, y, z).isReplaceable()) {
+
             return world.setBlock(x, y, z, blockId, metaData, 3);
         }
         return false;
@@ -70,9 +119,9 @@ public class UtilBlock {
 
     public static boolean setBlock(World world, int x, int y, int z, int blockId, int metaData) {
 
-        if (world.blockExists(x, y, z)) {
+        if(world.blockExists(x, y, z)) {
 
-            if (blockId == 0) {
+            if(blockId == 0) {
 
                 world.setBlockToAir(x, y, z);
                 return true;
@@ -88,55 +137,66 @@ public class UtilBlock {
 
     public static void breakBlock(World world, int x, int y, int z) {
 
-        if (world.getBlockId(x, y, z) != 0) {
+        if(world.getBlockId(x, y, z) != 0) {
 
             world.playAuxSFX(2001, x, y, z, world.getBlockId(x, y, z) + (world.getBlockMetadata(x, y, z) << 12));
             Block.blocksList[world.getBlockId(x, y, z)].dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z), 0);
             world.setBlockToAir(x, y, z);
         }
     }
+
     public static boolean breakAndAddToInventoryWithCheck(IInventory inventory, World world, int x, int y, int z, boolean doWork) {
-        
+
         return false;
     }
-    
+
     public static boolean breakAndAddToInventory(IInventory inventory, World world, int x, int y, int z, boolean doWork) {
 
         boolean itWorked = false;
-        boolean canDo = false;
+        boolean canAddToInventory = false;
 
-        if (world.getBlockId(x, y, z) != 0 && !(Block.blocksList[world.getBlockId(x, y, z)].getBlockHardness(world, x, y, z) < 0)) {
+        Block block = Block.blocksList[world.getBlockId(x, y, z)];
 
-            Block block = Block.blocksList[world.getBlockId(x, y, z)];
+        if(block != null) {
 
             ArrayList<ItemStack> items = block.getBlockDropped(world, x, y, z, world.getBlockMetadata(x, y, z), 1);
 
             if(!items.isEmpty()) {
 
-                for (ItemStack item : items) {
+                for(ItemStack item : items) {
 
-                        if (inventory != null) {
+                    if(inventory != null) {
 
-                            canDo = UtilInventory.addItemStackToInventory(inventory, item, false);
-                        }
-                }
-
-                if(canDo) {
-
-                    for (ItemStack item : items) {
-
-                            if (inventory != null) {
-
-                                itWorked = UtilInventory.addItemStackToInventory(inventory, item, doWork);
-                            }
+                        canAddToInventory = UtilInventory.addItemStackToInventory(inventory, item, false);
                     }
                 }
+            }
+            else {
 
-                if(doWork && canDo && itWorked) {
-                    
-                    world.playAuxSFX(2001, x, y, z, world.getBlockId(x, y, z) + (world.getBlockMetadata(x, y, z) << 12));
-                    world.setBlockToAir(x, y, z);
+                canAddToInventory = true;
+            }
+
+            if(canAddToInventory) {
+
+                if(!items.isEmpty()) {
+
+                    for(ItemStack item : items) {
+
+                        if(inventory != null) {
+
+                            itWorked = UtilInventory.addItemStackToInventory(inventory, item, doWork);
+                        }
+                    }
                 }
+                else {
+
+                    itWorked = true;
+                }
+            }
+
+            if(doWork && canAddToInventory && itWorked) {
+
+                world.destroyBlock(x, y, z, false);
             }
         }
         return itWorked;
@@ -149,21 +209,21 @@ public class UtilBlock {
         if(fortune <= 0)
             fortune = 1;
 
-        if (world.getBlockId(x, y, z) != 0 && !(Block.blocksList[world.getBlockId(x, y, z)].getBlockHardness(world, x, y, z) == -1)) {
+        if(world.getBlockId(x, y, z) != 0 && !(Block.blocksList[world.getBlockId(x, y, z)].getBlockHardness(world, x, y, z) == -1)) {
 
             Block block = Block.blocksList[world.getBlockId(x, y, z)];
 
             ArrayList<ItemStack> items = block.getBlockDropped(world, x, y, z, world.getBlockMetadata(x, y, z), fortune);
 
-            for (ItemStack item : items) {
+            for(ItemStack item : items) {
 
-                if (world.rand.nextFloat() <= fortune) {
+                if(world.rand.nextFloat() <= fortune) {
 
-                    if (inventory != null) {
+                    if(inventory != null) {
 
-                        if (!UtilInventory.addItemStackToInventory(inventory, item, true)) {
+                        if(!UtilInventory.addItemStackToInventory(inventory, item, true)) {
 
-                            if (dropExtra) {
+                            if(dropExtra) {
 
                                 UtilBlock.spawnItemStackEntity(world, x, y, z, item, 1);
                             }
@@ -172,7 +232,7 @@ public class UtilBlock {
 
                             itWorked = true;
                         }
-                    } 
+                    }
                     else if(dropExtra) {
 
                         UtilBlock.spawnItemStackEntity(world, x, y, z, item, 1);
@@ -180,7 +240,7 @@ public class UtilBlock {
                 }
             }
 
-            world.playAuxSFX( 2001, x, y, z, world.getBlockId(x, y, z) + (world.getBlockMetadata(x, y, z) << 12));
+            world.playAuxSFX(2001, x, y, z, world.getBlockId(x, y, z) + (world.getBlockMetadata(x, y, z) << 12));
             world.setBlockToAir(x, y, z);
         }
         return itWorked;
@@ -191,7 +251,7 @@ public class UtilBlock {
         if(fortune <= 0)
             fortune = 1;
 
-        if (world.getBlockId(x, y, z) != 0) {
+        if(world.getBlockId(x, y, z) != 0) {
 
             Block block = Block.blocksList[world.getBlockId(x, y, z)];
 
@@ -203,7 +263,7 @@ public class UtilBlock {
 
     public static void spawnItemStackEntity(World world, double x, double y, double z, ItemStack item, int delayforPickup) {
 
-        if (world.getGameRules().getGameRuleBooleanValue("doTileDrops") && !world.isRemote) {
+        if(world.getGameRules().getGameRuleBooleanValue("doTileDrops") && !world.isRemote) {
 
             float f = 0.7F;
             double d0 = world.rand.nextFloat() * f + (1.0F - f) * 0.5D;
@@ -219,37 +279,37 @@ public class UtilBlock {
 
         boolean isSuccessful = false;
 
-        if (side.offsetX != 0) {
+        if(side.offsetX != 0) {
 
-            for (int i = -radius; i <= radius; i++) {
+            for(int i = -radius; i <= radius; i++) {
 
-                for (int n = -radius; n <= radius; n++) {
+                for(int n = -radius; n <= radius; n++) {
 
-                    if (cycle.execute(player, world, x, y + i, z + n, side, id))
+                    if(cycle.execute(player, world, x, y + i, z + n, side, id))
                         isSuccessful = true;
                 }
             }
         }
 
-        if (side.offsetY != 0) {
+        if(side.offsetY != 0) {
 
-            for (int i = -radius; i <= radius; i++) {
+            for(int i = -radius; i <= radius; i++) {
 
-                for (int n = -radius; n <= radius; n++) {
+                for(int n = -radius; n <= radius; n++) {
 
-                    if (cycle.execute(player, world, x + i, y, z + n, side, id))
+                    if(cycle.execute(player, world, x + i, y, z + n, side, id))
                         isSuccessful = true;
                 }
             }
         }
 
-        if (side.offsetZ != 0) {
+        if(side.offsetZ != 0) {
 
-            for (int i = -radius; i <= radius; i++) {
+            for(int i = -radius; i <= radius; i++) {
 
-                for (int n = -radius; n <= radius; n++) {
+                for(int n = -radius; n <= radius; n++) {
 
-                    if (cycle.execute(player, world, x + i, y + n, z, side, id))
+                    if(cycle.execute(player, world, x + i, y + n, z, side, id))
                         isSuccessful = true;
                 }
             }
@@ -265,32 +325,29 @@ public class UtilBlock {
     public static boolean cycle3DBlock(EntityLivingBase player, World world, int x, int y, int z, ForgeDirection side, int radius, IBlockCycle cycle, int id) {
         boolean isSuccessful = false;
 
-        if (side.offsetX != 0) {
+        if(side.offsetX != 0) {
 
-            for (int i = -radius; i <= radius; i++) {
+            for(int i = -radius; i <= radius; i++) {
 
-                if (UtilBlock.cycle2DBlock(player, world, x + i, y, z, side,
-                        radius, cycle, id))
+                if(UtilBlock.cycle2DBlock(player, world, x + i, y, z, side, radius, cycle, id))
                     isSuccessful = true;
             }
         }
 
-        if (side.offsetY != 0) {
+        if(side.offsetY != 0) {
 
-            for (int i = -radius; i <= radius; i++) {
+            for(int i = -radius; i <= radius; i++) {
 
-                if (UtilBlock.cycle2DBlock(player, world, x, y + i, z, side,
-                        radius, cycle, id))
+                if(UtilBlock.cycle2DBlock(player, world, x, y + i, z, side, radius, cycle, id))
                     isSuccessful = true;
             }
         }
 
-        if (side.offsetZ != 0) {
+        if(side.offsetZ != 0) {
 
-            for (int i = -radius; i <= radius; i++) {
+            for(int i = -radius; i <= radius; i++) {
 
-                if (UtilBlock.cycle2DBlock(player, world, x, y, z + 1, side,
-                        radius, cycle, id))
+                if(UtilBlock.cycle2DBlock(player, world, x, y, z + 1, side, radius, cycle, id))
                     isSuccessful = true;
             }
         }
@@ -300,49 +357,49 @@ public class UtilBlock {
     public static boolean cycle3DBlock(EntityLivingBase player, World world, int x, int y, int z, ForgeDirection side, int radius, int distance, IBlockCycle cycle, int id) {
         boolean isSuccessful = false;
 
-        for (int i = 0; i < distance; i++) {
+        for(int i = 0; i < distance; i++) {
 
-            if (side.offsetX != 0) {
+            if(side.offsetX != 0) {
 
-                if (side.offsetX > 0) {
+                if(side.offsetX > 0) {
 
-                    if (UtilBlock.cycle2DBlock(player, world, x - i, y, z, side, radius, cycle, id))
+                    if(UtilBlock.cycle2DBlock(player, world, x - i, y, z, side, radius, cycle, id))
                         isSuccessful = true;
                 }
 
-                if (side.offsetX < 0) {
+                if(side.offsetX < 0) {
 
-                    if (UtilBlock.cycle2DBlock(player, world, x + i, y, z, side, radius, cycle, id))
-                        isSuccessful = true;
-                }
-            }
-
-            if (side.offsetY != 0) {
-
-                if (side.offsetY > 0) {
-
-                    if (UtilBlock.cycle2DBlock(player, world, x, y - i, z, side, radius, cycle, id))
-                        isSuccessful = true;
-                }
-
-                if (side.offsetY < 0) {
-
-                    if (UtilBlock.cycle2DBlock(player, world, x, y + i, z, side, radius, cycle, id))
+                    if(UtilBlock.cycle2DBlock(player, world, x + i, y, z, side, radius, cycle, id))
                         isSuccessful = true;
                 }
             }
 
-            if (side.offsetZ != 0) {
+            if(side.offsetY != 0) {
 
-                if (side.offsetZ > 0) {
+                if(side.offsetY > 0) {
 
-                    if (UtilBlock.cycle2DBlock(player, world, x, y, z - i, side, radius, cycle, id))
+                    if(UtilBlock.cycle2DBlock(player, world, x, y - i, z, side, radius, cycle, id))
                         isSuccessful = true;
                 }
 
-                if (side.offsetZ < 0) {
+                if(side.offsetY < 0) {
 
-                    if (UtilBlock.cycle2DBlock(player, world, x, y, z + i, side, radius, cycle, id))
+                    if(UtilBlock.cycle2DBlock(player, world, x, y + i, z, side, radius, cycle, id))
+                        isSuccessful = true;
+                }
+            }
+
+            if(side.offsetZ != 0) {
+
+                if(side.offsetZ > 0) {
+
+                    if(UtilBlock.cycle2DBlock(player, world, x, y, z - i, side, radius, cycle, id))
+                        isSuccessful = true;
+                }
+
+                if(side.offsetZ < 0) {
+
+                    if(UtilBlock.cycle2DBlock(player, world, x, y, z + i, side, radius, cycle, id))
                         isSuccessful = true;
                 }
             }

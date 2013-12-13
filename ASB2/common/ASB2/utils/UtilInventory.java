@@ -3,16 +3,17 @@ package ASB2.utils;
 import java.util.ArrayList;
 
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
 
 public class UtilInventory {
 
     public static int useFuel(IInventory inventory, int targetFuelAmount) {
 
-        ArrayList<ItemStack> fuels = UtilInventory.getFuelsInInventory(inventory);        
+        ArrayList<ItemStack> fuels = UtilInventory.getFuelsInInventory(inventory);
         ArrayList<ItemStack> toRemove = new ArrayList<ItemStack>();
 
         int burnTime = 0;
@@ -32,14 +33,9 @@ public class UtilInventory {
 
         for(ItemStack stack : fuels) {
 
-            UtilInventory.removeItemStackFromInventory(inventory, stack, stack.stackSize, true);            
+            UtilInventory.removeItemStackFromInventory(inventory, stack, stack.stackSize, true);
         }
         return burnTime;
-    }
-
-    public static ItemStack smeltItemStack(ItemStack stack) {
-
-        return FurnaceRecipes.smelting().getSmeltingResult(stack);
     }
 
     public static ArrayList<ItemStack> getFuelsInInventory(IInventory inventory) {
@@ -63,22 +59,57 @@ public class UtilInventory {
 
     public static boolean addItemStackToInventoryAndSpawnExcess(World world, IInventory destination, ItemStack itemStack, int x, int y, int z) {
 
-        if (!UtilInventory.addItemStackToInventory(destination, itemStack, true)) {
+        if(!UtilInventory.addItemStackToInventory(destination, itemStack, true)) {
 
             UtilBlock.spawnItemStackEntity(world, x, y, z, itemStack, 1);
         }
         return true;
     }
 
+    public static boolean addItemStackToISidedInventory(ISidedInventory destination, ForgeDirection direction, ItemStack itemStack, boolean doWork) {
+
+        if(itemStack != null) {
+
+            for(int i = 0; i < destination.getAccessibleSlotsFromSide(direction.ordinal()).length; i++) {
+
+                if(destination.canInsertItem(destination.getAccessibleSlotsFromSide(direction.ordinal())[i], itemStack, direction.ordinal())) {
+
+                    if(UtilInventory.addItemStackToSlot(destination, itemStack, destination.getAccessibleSlotsFromSide(direction.ordinal())[i], doWork)) {
+
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public static boolean addItemStackToInventory(IInventory destination, ItemStack itemStack, boolean doWork) {
 
-        if (itemStack != null) {
+        if(itemStack != null) {
 
-            for (int i = 0; i < destination.getSizeInventory(); i++) {
+            for(int i = 0; i < destination.getSizeInventory(); i++) {
 
                 if(UtilInventory.addItemStackToSlot(destination, itemStack, i, doWork)) {
 
                     return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean addItemStackToISidedSlot(ISidedInventory destination, ForgeDirection direction, ItemStack itemStack, int slot, boolean doWork) {
+
+        if(destination != null) {
+
+            int[] accessableSlots = destination.getAccessibleSlotsFromSide(direction.ordinal());
+
+            for(int i = 0; i < accessableSlots.length; i++) {
+
+                if(i == slot && destination.canInsertItem(accessableSlots[i], itemStack, direction.ordinal())) {
+
+                    return UtilInventory.addItemStackToSlot(destination, itemStack, slot, doWork);
                 }
             }
         }
@@ -93,13 +124,18 @@ public class UtilInventory {
 
                 ItemStack stack = destination.getStackInSlot(slot);
 
-                if (stack == null) {
+                if(stack != null) {
+
+                    stack = stack.copy();
+                }
+
+                if(stack == null) {
 
                     if(doWork)
                         destination.setInventorySlotContents(slot, itemStack);
 
                     return true;
-                } 
+                }
                 else {
 
                     if(stack.isItemEqual(itemStack)) {
@@ -110,7 +146,7 @@ public class UtilInventory {
                         }
                         else {
 
-                            if(stack.stackSize + itemStack.stackSize <= destination.getInventoryStackLimit()) {
+                            if(stack.stackSize + itemStack.stackSize <= destination.getInventoryStackLimit() && stack.stackSize + itemStack.stackSize <= stack.getMaxStackSize()) {
 
                                 return true;
                             }
@@ -122,16 +158,46 @@ public class UtilInventory {
         return false;
     }
 
-    public static boolean removeItemStackFromInventory(IInventory destination, ItemStack itemStack, int amount, boolean doWork) {
+    public static boolean removeItemStackFromISidedInventory(ISidedInventory destination, ForgeDirection direction, ItemStack itemStack, int amount, boolean doWork) {
 
-        if (itemStack != null) {
+        if(itemStack != null) {
 
-            for (int i = 0; i < destination.getSizeInventory(); i++) {
+            for(int i = 0; i < destination.getAccessibleSlotsFromSide(direction.ordinal()).length; i++) {
 
-                if(UtilInventory.removeItemStackFromSlot(destination, itemStack, i, amount, doWork)) {
+                if(destination.canExtractItem(destination.getAccessibleSlotsFromSide(direction.ordinal())[i], itemStack, direction.ordinal())) {
+
+                    if(UtilInventory.removeItemStackFromSlot(destination, itemStack, destination.getAccessibleSlotsFromSide(direction.ordinal())[i], amount, doWork)) {
+
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean removeItemStackFromInventory(IInventory source, ItemStack itemStack, int amount, boolean doWork) {
+
+        if(itemStack != null) {
+
+            for(int i = 0; i < source.getSizeInventory(); i++) {
+
+                if(UtilInventory.removeItemStackFromSlot(source, itemStack, i, amount, doWork)) {
 
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    public static boolean removeItemStackFromISidedSlot(ISidedInventory source, ForgeDirection direction, ItemStack itemStack, int slot, int amount, boolean doWork) {
+
+        if(source != null) {
+
+            if(source.canExtractItem(slot, itemStack, direction.ordinal())) {
+
+                return UtilInventory.removeItemStackFromSlot(source, itemStack, slot, amount, doWork);
             }
         }
         return false;
@@ -143,11 +209,9 @@ public class UtilInventory {
 
             ItemStack stack = source.getStackInSlot(slot);
 
-            if (stack == null) {
+            if(stack != null) {
 
-                return false;
-            } 
-            else {
+                stack = stack.copy();
 
                 if(stack.isItemEqual(itemStack)) {
 
@@ -157,7 +221,7 @@ public class UtilInventory {
                     }
                     else {
 
-                        if(stack.stackSize - itemStack.stackSize >= 0) {
+                        if(stack.stackSize - amount >= 0) {
 
                             return true;
                         }
@@ -170,13 +234,13 @@ public class UtilInventory {
 
     public static boolean hasItemStack(IInventory inventory, ItemStack stack) {
 
-        if (stack != null) {
+        if(stack != null) {
 
-            for (int i = 0; i < inventory.getInventoryStackLimit(); i++) {
+            for(int i = 0; i < inventory.getInventoryStackLimit(); i++) {
 
-                if (inventory.getStackInSlot(i) != null) {
+                if(inventory.getStackInSlot(i) != null) {
 
-                    if ((inventory.getStackInSlot(i).isItemEqual(stack))) {
+                    if((inventory.getStackInSlot(i).isItemEqual(stack))) {
 
                         return true;
                     }
@@ -188,17 +252,25 @@ public class UtilInventory {
 
     public static boolean consumeItemStack(IInventory inventory, ItemStack itemStack, int amount) {
 
-        if (itemStack != null) {
+        if(inventory != null) {
 
-            for (int i = 0; i < inventory.getSizeInventory(); i++) {
+            if(itemStack != null) {
 
-                ItemStack slotStack = inventory.getStackInSlot(i).copy();
+                for(int i = 0; i < inventory.getSizeInventory(); i++) {
 
-                if (slotStack != null) {
+                    ItemStack slotStack = inventory.getStackInSlot(i);
 
-                    if (slotStack.isItemEqual(itemStack)) {
+                    if(slotStack != null) {
 
-                        return UtilInventory.decreaseSlotContentsBoolean(inventory, i, amount);
+                        slotStack = slotStack.copy();
+
+                        if(slotStack.isItemEqual(itemStack)) {
+
+                            if(UtilInventory.decreaseSlotContentsBoolean(inventory, i, amount)) {
+
+                                return true;
+                            }
+                        }
                     }
                 }
             }
@@ -212,17 +284,103 @@ public class UtilInventory {
 
         if(source != destination) {
 
-            for (int sourceSlot = 0; sourceSlot < source.getSizeInventory(); sourceSlot++) {
+            for(int sourceSlot = 0; sourceSlot < source.getSizeInventory(); sourceSlot++) {
 
-                if (source.getStackInSlot(sourceSlot) != null) {
+                if(source.getStackInSlot(sourceSlot) != null) {
 
                     ItemStack sourceStack = source.getStackInSlot(sourceSlot).copy();
 
-                    for (int destinationSlot = 0; destinationSlot < destination.getSizeInventory(); destinationSlot++) {
+                    for(int destinationSlot = 0; destinationSlot < destination.getSizeInventory(); destinationSlot++) {
 
                         if(UtilInventory.addItemStackToSlot(destination, sourceStack, destinationSlot, false) && UtilInventory.removeItemStackFromInventory(source, sourceStack, sourceStack.stackSize, false)) {
 
                             itWorked = UtilInventory.addItemStackToSlot(destination, sourceStack, destinationSlot, true) && UtilInventory.removeItemStackFromInventory(source, sourceStack, sourceStack.stackSize, true);
+                        }
+                    }
+                }
+            }
+        }
+        return itWorked;
+    }
+
+    public static boolean moveEntireISidedInventory(ISidedInventory source, ForgeDirection directionSource, IInventory destination) {
+
+        boolean itWorked = false;
+
+        if(source != destination) {
+
+            int[] avaliableSlots = source.getAccessibleSlotsFromSide(directionSource.ordinal());
+
+            for(int sourceArrayPosition = 0; sourceArrayPosition < avaliableSlots.length; sourceArrayPosition++) {
+
+                if(source.getStackInSlot(avaliableSlots[sourceArrayPosition]) != null) {
+
+                    ItemStack sourceStack = source.getStackInSlot(avaliableSlots[sourceArrayPosition]).copy();
+
+                    if(source.canExtractItem(avaliableSlots[sourceArrayPosition], sourceStack, directionSource.ordinal())) {
+
+                        for(int destinationSlot = 0; destinationSlot < destination.getSizeInventory(); destinationSlot++) {
+
+                            if(UtilInventory.addItemStackToSlot(destination, sourceStack, destinationSlot, false) && UtilInventory.removeItemStackFromISidedInventory(source, directionSource, sourceStack, sourceStack.stackSize, false)) {
+
+                                itWorked = UtilInventory.addItemStackToSlot(destination, sourceStack, destinationSlot, true) && UtilInventory.removeItemStackFromISidedInventory(source, directionSource, sourceStack, sourceStack.stackSize, true);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return itWorked;
+    }
+
+    public static boolean moveEntireISidedInventory(IInventory source, ForgeDirection direction, ISidedInventory destination) {
+
+        boolean itWorked = false;
+
+        if(source != destination) {
+
+            for(int sourceSlot = 0; sourceSlot < source.getSizeInventory(); sourceSlot++) {
+
+                if(source.getStackInSlot(sourceSlot) != null) {
+
+                    ItemStack sourceStack = source.getStackInSlot(sourceSlot).copy();
+
+                    int[] destinationAvaliableSlots = destination.getAccessibleSlotsFromSide(direction.getOpposite().ordinal());
+
+                    for(int destinationArrayPosition = 0; destinationArrayPosition < destinationAvaliableSlots.length; destinationArrayPosition++) {
+
+                        if(UtilInventory.addItemStackToISidedSlot(destination, direction.getOpposite(), sourceStack, destinationAvaliableSlots[destinationArrayPosition], false) && UtilInventory.removeItemStackFromInventory(source, sourceStack, sourceStack.stackSize, false)) {
+
+                            itWorked = UtilInventory.addItemStackToISidedSlot(destination, direction.getOpposite(), sourceStack, destinationAvaliableSlots[destinationArrayPosition], true) && UtilInventory.removeItemStackFromInventory(source, sourceStack, sourceStack.stackSize, true);
+                        }
+                    }
+                }
+            }
+        }
+        return itWorked;
+    }
+
+    public static boolean moveEntireISidedInventory(ISidedInventory source, ForgeDirection direction, ForgeDirection directionDestination, ISidedInventory destination) {
+
+        boolean itWorked = false;
+
+        if(source != destination) {
+
+            int[] avaliableSlots = source.getAccessibleSlotsFromSide(direction.ordinal());
+
+            for(int sourceArrayPosition = 0; sourceArrayPosition < avaliableSlots.length; sourceArrayPosition++) {
+
+                if(source.getStackInSlot(avaliableSlots[sourceArrayPosition]) != null) {
+
+                    ItemStack sourceStack = source.getStackInSlot(avaliableSlots[sourceArrayPosition]).copy();
+
+                    int[] destinationAvaliableSlots = destination.getAccessibleSlotsFromSide(directionDestination.ordinal());
+
+                    for(int destinationArrayPosition = 0; destinationArrayPosition < destinationAvaliableSlots.length; destinationArrayPosition++) {
+
+                        if(UtilInventory.addItemStackToISidedSlot(destination, directionDestination, sourceStack, destinationAvaliableSlots[destinationArrayPosition], false) && UtilInventory.removeItemStackFromISidedInventory(source, direction, sourceStack, sourceStack.stackSize, false)) {
+
+                            itWorked = UtilInventory.addItemStackToISidedSlot(destination, directionDestination, sourceStack, destinationAvaliableSlots[destinationArrayPosition], true) && UtilInventory.removeItemStackFromISidedInventory(source, direction, sourceStack, sourceStack.stackSize, true);
                         }
                     }
                 }
@@ -240,7 +398,7 @@ public class UtilInventory {
 
         ItemStack stack = inventory.getStackInSlot(slot);
 
-        if (stack != null) {
+        if(stack != null) {
 
             int toLeave = stack.stackSize - amount;
 
@@ -264,7 +422,7 @@ public class UtilInventory {
 
         ItemStack stack = inventory.getStackInSlot(slot);
 
-        if (stack != null) {
+        if(stack != null) {
 
             int newAmount = stack.stackSize + amount;
 

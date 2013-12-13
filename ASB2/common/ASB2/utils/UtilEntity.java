@@ -10,6 +10,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import ASB2.vector.Vector3;
+import cpw.mods.fml.client.FMLClientHandler;
 
 public class UtilEntity {
 
@@ -36,7 +37,7 @@ public class UtilEntity {
         if (!(movingobjectposition == null)) {
 
             if (movingobjectposition.typeOfHit == EnumMovingObjectType.TILE) {
-                
+
                 int i = movingobjectposition.blockX;
                 int j = movingobjectposition.blockY;
                 int k = movingobjectposition.blockZ;
@@ -52,21 +53,10 @@ public class UtilEntity {
         return new int[] {position.intX(), position.intY(), position.intX()};
     }
 
-    public static ForgeDirection getEntityDirection(Entity entity, boolean useYaw) {
+    public static ForgeDirection getEntityYawDirection(Entity entity) {
 
         int roatation = MathHelper.floor_double(entity.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
 
-        if (!useYaw) {
-
-            if (entity.rotationPitch >= 90 && entity.rotationPitch <= 180) {
-
-                return ForgeDirection.DOWN;
-            } 
-            else if (entity.rotationPitch <= 90) {
-
-                return ForgeDirection.UP;
-            }
-        }
         switch (roatation) {
 
             case 0:
@@ -81,9 +71,28 @@ public class UtilEntity {
         return ForgeDirection.UNKNOWN;
     }
 
+
+    public static ForgeDirection getEntityPitchDirection(Entity entity) {
+
+        if (entity.rotationPitch >= 90 && entity.rotationPitch <= 180) {
+
+            return ForgeDirection.DOWN;
+        } 
+        else if (entity.rotationPitch <= 90) {
+
+            return ForgeDirection.UP;
+        }
+        return ForgeDirection.UNKNOWN;
+    }
+
     public static void damageEntity(World world, Entity entity, DamageSource source, int damage) {
-            
-            entity.attackEntityFrom(source, damage);
+
+        entity.attackEntityFrom(source, damage);
+    }
+
+    public static void sendClientChat(String message) {
+
+        FMLClientHandler.instance().getClient().ingameGUI.getChatGUI().printChatMessage(message);
     }
 
     public static void sendChatToPlayer(EntityPlayer player, String message) {
