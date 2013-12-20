@@ -1,5 +1,7 @@
 package ASB2.utils;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
@@ -100,6 +102,20 @@ public class UtilEntity {
         if (!player.worldObj.isRemote) {
 
             player.addChatMessage(message);
+        }
+    }
+    
+    public static void spawnFX(EntityFX fx) {
+
+        if(FMLClientHandler.instance().getClient() != null) {
+
+            Minecraft mc = Minecraft.getMinecraft();
+            int settings = mc.gameSettings.particleSetting;
+
+            if(!(settings == 2 || settings == 1 && fx.worldObj.rand.nextInt(3) == 0)) {
+
+                Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+            }
         }
     }
 }

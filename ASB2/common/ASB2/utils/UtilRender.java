@@ -2,7 +2,6 @@ package ASB2.utils;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
@@ -127,9 +126,10 @@ public final class UtilRender {
         tessellator.addVertex(xStart + xEnd, yStart, zStart + zEnd);
         tessellator.addVertex(xStart + xEnd, yStart, zStart);
         tessellator.draw();
-
-        GL11.glEnable(2896);
+        
+        GL11.glEnable(2884);
         GL11.glEnable(3553);
+        GL11.glEnable(2896);
     }
 
     public static void renderIcon(double x, double y, Icon icon, double xChange, double yChange) {
@@ -172,20 +172,6 @@ public final class UtilRender {
             if(FMLClientHandler.instance().getClient() != null && texture != null) {
 
                 FMLClientHandler.instance().getClient().renderEngine.bindTexture(texture);
-            }
-        }
-    }
-
-    public static void renderFX(EntityFX fx) {
-
-        if(FMLClientHandler.instance().getClient() != null) {
-
-            Minecraft mc = Minecraft.getMinecraft();
-            int settings = mc.gameSettings.particleSetting;
-
-            if(!(settings == 2 || settings == 1 && fx.worldObj.rand.nextInt(3) == 0)) {
-
-                Minecraft.getMinecraft().effectRenderer.addEffect(fx);
             }
         }
     }
