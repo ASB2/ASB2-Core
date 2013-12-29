@@ -241,6 +241,11 @@ public class Vector3 implements Cloneable {
         return MathHelper.sqrt_double(var2 * var2 + var4 * var4 + var6 * var6);
     }
     
+    public Vector3 distance(Vector3 vector) {
+        
+        return new Vector3(vector.x - this.x, vector.y - this.y, vector.z - this.z);
+    }
+    
     public Vector3 add(Vector3 par1) {
         
         this.x += par1.x;

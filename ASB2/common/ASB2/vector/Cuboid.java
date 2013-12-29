@@ -15,8 +15,8 @@ public class Cuboid implements ICuboidIterator {
     
     public Cuboid(Vector3 firstCorner, Vector3 opositeCorner) {
         
-        corner = firstCorner;        
-        Vector3 subsracted = firstCorner.clone().subtract(opositeCorner);
+        corner = firstCorner;
+        Vector3 subsracted = firstCorner.clone().distance(opositeCorner);
         
         xSize = subsracted.intX();
         if (xSize < 0) {
@@ -128,6 +128,12 @@ public class Cuboid implements ICuboidIterator {
     
     public Cuboid clone() {
         return new Cuboid(this);
+    }
+    
+    @Override
+    public String toString() {
+        
+        return "Cuboid: XSize" + this.xSize + ", YSize: " + this.ySize + ", ZSize: " + this.zSize;
     }
     
     public NBTTagCompound save(NBTTagCompound tag) {
