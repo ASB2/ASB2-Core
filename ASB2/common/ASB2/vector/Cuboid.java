@@ -94,6 +94,9 @@ public class Cuboid implements ICuboidIterator {
         return corner.clone().add(this.getRelativeXSize(), this.getRelativeYSize(), this.getRelativeZSize());
     }
     
+    /*
+     * ASB2 shouldn't touch this method. It is fine how it is;
+     */
     public boolean iterate(ICuboidIterator iterator, Object... providedInfo) {
         
         for (int x = 0; x <= this.xSize; x++) {
@@ -114,15 +117,35 @@ public class Cuboid implements ICuboidIterator {
     
     public Set<Vector3> getComposingBlock() {
         
-        composingBlocks.clear();
+        if (composingBlocks.isEmpty()) {
+            
+            this.iterate(this, 0);
+        }
+        return composingBlocks;
+    }
+    
+    public Set<Vector3> getCornersBlocks() {
         
-        return this.iterate(this, (Object) null) ? composingBlocks : null;
+        Set<Vector3> corners = new HashSet<Vector3>();
+        
+        corners.add(this.getCore());
+        corners.add(this.getOppositeCore());
+        
+        corners.add(this.getCore().add(getRelativeXSize(), 0, 0));
+        corners.add(this.getCore().add(getRelativeXSize(), getRelativeYSize(), 0));
+        corners.add(this.getCore().add(getRelativeXSize(), 0, getRelativeZSize()));
+        corners.add(this.getCore().add(0, getRelativeYSize(), 0));
+        corners.add(this.getCore().add(0, getRelativeYSize(), getRelativeZSize()));
+        corners.add(this.getCore().add(0, 0, getRelativeZSize()));
+        return corners;
     }
     
     @Override
     public boolean iterate(Vector3 vector, Object... providedInfo) {
         
-        composingBlocks.add(vector);
+        if ((int) providedInfo[0] == 0) {
+            composingBlocks.add(vector);
+        }
         return true;
     }
     
@@ -133,13 +156,13 @@ public class Cuboid implements ICuboidIterator {
     @Override
     public String toString() {
         
-        return "Cuboid: XSize" + this.xSize + ", YSize: " + this.ySize + ", ZSize: " + this.zSize;
+        return "Cuboid XSize: " + this.xSize + ", YSize: " + this.ySize + ", ZSize: " + this.zSize;
     }
     
     public NBTTagCompound save(NBTTagCompound tag) {
         
-        tag.setCompoundTag("coreVector", this.getCore().writeToNBT(tag));
-        tag.setCompoundTag("coreOpposingVector", this.getOppositeCore().writeToNBT(tag));
+        tag.setCompoundTag("coreVector", this.getCore().writeToNBT(new NBTTagCompound()));
+        tag.setCompoundTag("coreOpposingVector", this.getOppositeCore().writeToNBT(new NBTTagCompound()));
         return tag;
     }
     

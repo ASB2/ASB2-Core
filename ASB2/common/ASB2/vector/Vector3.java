@@ -2,6 +2,7 @@ package ASB2.vector;
 
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -49,7 +50,7 @@ public class Vector3 implements Cloneable {
     public Vector3(TileEntity tileEntity) {
         
         this.x = tileEntity.xCoord + .5;
-        this.y = tileEntity.yCoord;
+        this.y = tileEntity.yCoord + .5;
         this.z = tileEntity.zCoord + .5;
     }
     
@@ -168,6 +169,20 @@ public class Vector3 implements Cloneable {
             return null;
     }
     
+    public Block getBlock(IBlockAccess world) {
+        
+        return Block.blocksList[this.getBlockID(world)];
+    }
+    
+    public Block getBlock(World world) {
+        
+        if (world.blockExists(this.intX(), this.intY(), this.intZ())) {
+            
+            return Block.blocksList[this.getBlockID(world)];
+        } else
+            return null;
+    }
+    
     public boolean setBlock(World world, int id, int metadata, int notify) {
         
         return world.setBlock(this.intX(), this.intY(), this.intZ(), id, metadata, notify);
@@ -280,24 +295,27 @@ public class Vector3 implements Cloneable {
     
     public Vector3 add(ForgeDirection side, double amount) {
         
-        switch (side.ordinal()) {
-            case 0:
+        switch (side) {
+        
+            case DOWN:
                 this.y -= amount;
                 break;
-            case 1:
+            case UP:
                 this.y += amount;
                 break;
-            case 2:
+            case NORTH:
                 this.z -= amount;
                 break;
-            case 3:
+            case SOUTH:
                 this.z += amount;
                 break;
-            case 4:
+            case WEST:
                 this.x -= amount;
                 break;
-            case 5:
+            case EAST:
                 this.x += amount;
+                break;
+            default:
                 break;
         }
         return this;
@@ -437,7 +455,7 @@ public class Vector3 implements Cloneable {
     }
     
     public boolean intEquals(Vector3 vec) {
-        return vec != null ? this.intX() == vec.intX() && this.intY() == vec.intY() && this.intZ() == vec.intZ() : false;
+        return vec != null ? (this.intX() == vec.intX() && this.intY() == vec.intY() && this.intZ() == vec.intZ()) : false;
     }
     
     @Override
