@@ -66,17 +66,17 @@ public class Cuboid implements ICuboidIterator {
     
     public int getRelativeXSize() {
         
-        return xNeg ? xSize * -1 : xSize;
+        return xNeg ? this.getXSize() * -1 : this.getXSize();
     }
     
     public int getRelativeYSize() {
         
-        return yNeg ? ySize * -1 : ySize;
+        return yNeg ? this.getYSize() * -1 : this.getYSize();
     }
     
     public int getRelativeZSize() {
         
-        return zNeg ? zSize * -1 : zSize;
+        return zNeg ? this.getZSize() * -1 : this.getZSize();
     }
     
     public boolean getIs3D() {
@@ -140,6 +140,23 @@ public class Cuboid implements ICuboidIterator {
         return corners;
     }
     
+    public Set<Vector3> getBlocksAtLevel(int level) {
+        
+        Set<Vector3> blocks = new HashSet<Vector3>();
+        
+        if (this.ySize <= level) {
+            
+            for (int x = 0; x <= this.xSize; x++) {
+                
+                for (int z = 0; z <= this.zSize; z++) {
+                    
+                    blocks.add(this.getCore().add(new Vector3(xNeg ? x * -1 : x, yNeg ? ySize * -1 : ySize, zNeg ? z * -1 : z)));
+                }
+            }
+        }
+        return blocks;
+    }
+    
     @Override
     public boolean iterate(Vector3 vector, Object... providedInfo) {
         
@@ -151,6 +168,11 @@ public class Cuboid implements ICuboidIterator {
     
     public Cuboid clone() {
         return new Cuboid(this);
+    }
+    
+    public boolean contains(Vector3 vector) {
+        
+        return this.getComposingBlock().contains(vector);
     }
     
     @Override
