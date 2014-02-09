@@ -16,31 +16,31 @@ import net.minecraftforge.common.ForgeDirection;
 public class UtilBlock {
 
     public static boolean isWaterInfine(World world, int x, int y, int z) {
-    
+
         int around = 0;
-        
-        if(world.getBlockId(x, y, z) == Block.waterStill.blockID) {
-            
-            for(ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-                
-                if(world.getBlockId(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ) == Block.waterStill.blockID) {
-                    
+
+        if (world.getBlockId(x, y, z) == Block.waterStill.blockID) {
+
+            for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+
+                if (world.getBlockId(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ) == Block.waterStill.blockID) {
+
                     around++;
                 }
             }
         }
         return around >= 2;
     }
-    
+
     public static boolean isBreakable(World world, int x, int y, int z) {
 
         Block block = Block.blocksList[world.getBlockId(x, y, z)];
 
-        if(block != null && !UtilBlock.isBlockAir(world, x, y, z)) {
+        if (block != null && !UtilBlock.isBlockAir(world, x, y, z)) {
 
-            if(!(block instanceof BlockFluid)) {
+            if (!(block instanceof BlockFluid)) {
 
-                if(block.blockHardness != -1) {
+                if (block.blockHardness != -1) {
 
                     return true;
                 }
@@ -53,7 +53,7 @@ public class UtilBlock {
 
         Block block = Block.blocksList[world.getBlockId(x, y, z)];
 
-        if(block != null) {
+        if (block != null) {
 
             return block.rotateBlock(world, x, y, z, face);
         }
@@ -62,25 +62,16 @@ public class UtilBlock {
 
     public static boolean isBlockAir(World world, int x, int y, int z) {
 
-        if(world.getBlockId(x, y, z) == 0) {
-
-            return true;
-        }
-
-        if(world.getBlockMaterial(x, y, z) == Material.air) {
-
-            return true;
-        }
-        return false;
+        return world.getBlockId(x, y, z) == 0 || world.getBlockMaterial(x, y, z) == Material.air;
     }
 
     public static boolean placeBlockInAir(World world, int x, int y, int z, int blockId, int metaData) {
 
-        if(world.getBlockId(x, y, z) == 0) {
+        if (world.getBlockId(x, y, z) == 0) {
 
             return world.setBlock(x, y, z, blockId, metaData, 3);
         }
-        if(world.getBlockMaterial(x, y, z) == Material.air || world.getBlockMaterial(x, y, z).isReplaceable()) {
+        if (world.getBlockMaterial(x, y, z) == Material.air || world.getBlockMaterial(x, y, z).isReplaceable()) {
 
             return world.setBlock(x, y, z, blockId, metaData, 3);
         }
@@ -91,9 +82,9 @@ public class UtilBlock {
 
         boolean itWorked = false;
 
-        for(ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+        for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 
-            if(world.isBlockProvidingPowerTo(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ, direction.ordinal()) > 0) {
+            if (world.isBlockProvidingPowerTo(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ, direction.ordinal()) > 0) {
 
                 itWorked = true;
             }
@@ -105,11 +96,11 @@ public class UtilBlock {
 
         int highest = 0;
 
-        for(ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+        for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 
             int temp = world.isBlockProvidingPowerTo(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ, direction.getOpposite().ordinal());
 
-            if(temp > highest) {
+            if (temp > highest) {
 
                 highest = temp;
             }
@@ -119,9 +110,9 @@ public class UtilBlock {
 
     public static boolean setBlock(World world, int x, int y, int z, int blockId, int metaData) {
 
-        if(world.blockExists(x, y, z)) {
+        if (world.blockExists(x, y, z)) {
 
-            if(blockId == 0) {
+            if (blockId == 0) {
 
                 world.setBlockToAir(x, y, z);
                 return true;
@@ -137,7 +128,7 @@ public class UtilBlock {
 
     public static void breakBlock(World world, int x, int y, int z) {
 
-        if(world.getBlockId(x, y, z) != 0) {
+        if (world.getBlockId(x, y, z) != 0) {
 
             world.playAuxSFX(2001, x, y, z, world.getBlockId(x, y, z) + (world.getBlockMetadata(x, y, z) << 12));
             Block.blocksList[world.getBlockId(x, y, z)].dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z), 0);
@@ -157,44 +148,42 @@ public class UtilBlock {
 
         Block block = Block.blocksList[world.getBlockId(x, y, z)];
 
-        if(block != null) {
+        if (block != null) {
 
             ArrayList<ItemStack> items = block.getBlockDropped(world, x, y, z, world.getBlockMetadata(x, y, z), 1);
 
-            if(!items.isEmpty()) {
+            if (!items.isEmpty()) {
 
-                for(ItemStack item : items) {
+                for (ItemStack item : items) {
 
-                    if(inventory != null) {
+                    if (inventory != null) {
 
                         canAddToInventory = UtilInventory.addItemStackToInventory(inventory, item, false);
                     }
                 }
-            }
-            else {
+            } else {
 
                 canAddToInventory = true;
             }
 
-            if(canAddToInventory) {
+            if (canAddToInventory) {
 
-                if(!items.isEmpty()) {
+                if (!items.isEmpty()) {
 
-                    for(ItemStack item : items) {
+                    for (ItemStack item : items) {
 
-                        if(inventory != null) {
+                        if (inventory != null) {
 
                             itWorked = UtilInventory.addItemStackToInventory(inventory, item, doWork);
                         }
                     }
-                }
-                else {
+                } else {
 
                     itWorked = true;
                 }
             }
 
-            if(doWork && canAddToInventory && itWorked) {
+            if (doWork && canAddToInventory && itWorked) {
 
                 world.destroyBlock(x, y, z, false);
             }
@@ -206,34 +195,32 @@ public class UtilBlock {
 
         boolean itWorked = false;
 
-        if(fortune <= 0)
+        if (fortune <= 0)
             fortune = 1;
 
-        if(world.getBlockId(x, y, z) != 0 && !(Block.blocksList[world.getBlockId(x, y, z)].getBlockHardness(world, x, y, z) == -1)) {
+        if (world.getBlockId(x, y, z) != 0 && !(Block.blocksList[world.getBlockId(x, y, z)].getBlockHardness(world, x, y, z) == -1)) {
 
             Block block = Block.blocksList[world.getBlockId(x, y, z)];
 
             ArrayList<ItemStack> items = block.getBlockDropped(world, x, y, z, world.getBlockMetadata(x, y, z), fortune);
 
-            for(ItemStack item : items) {
+            for (ItemStack item : items) {
 
-                if(world.rand.nextFloat() <= fortune) {
+                if (world.rand.nextFloat() <= fortune) {
 
-                    if(inventory != null) {
+                    if (inventory != null) {
 
-                        if(!UtilInventory.addItemStackToInventory(inventory, item, true)) {
+                        if (!UtilInventory.addItemStackToInventory(inventory, item, true)) {
 
-                            if(dropExtra) {
+                            if (dropExtra) {
 
                                 UtilBlock.spawnItemStackEntity(world, x, y, z, item, 1);
                             }
-                        }
-                        else {
+                        } else {
 
                             itWorked = true;
                         }
-                    }
-                    else if(dropExtra) {
+                    } else if (dropExtra) {
 
                         UtilBlock.spawnItemStackEntity(world, x, y, z, item, 1);
                     }
@@ -248,10 +235,10 @@ public class UtilBlock {
 
     public static ArrayList<ItemStack> getItemStackDropped(World world, int x, int y, int z, int fortune) {
 
-        if(fortune <= 0)
+        if (fortune <= 0)
             fortune = 1;
 
-        if(world.getBlockId(x, y, z) != 0) {
+        if (world.getBlockId(x, y, z) != 0) {
 
             Block block = Block.blocksList[world.getBlockId(x, y, z)];
 
@@ -263,7 +250,7 @@ public class UtilBlock {
 
     public static void spawnItemStackEntity(World world, double x, double y, double z, ItemStack item, int delayforPickup) {
 
-        if(world.getGameRules().getGameRuleBooleanValue("doTileDrops") && !world.isRemote) {
+        if (world.getGameRules().getGameRuleBooleanValue("doTileDrops") && !world.isRemote) {
 
             float f = 0.7F;
             double d0 = world.rand.nextFloat() * f + (1.0F - f) * 0.5D;
@@ -279,37 +266,37 @@ public class UtilBlock {
 
         boolean isSuccessful = false;
 
-        if(side.offsetX != 0) {
+        if (side.offsetX != 0) {
 
-            for(int i = -radius; i <= radius; i++) {
+            for (int i = -radius; i <= radius; i++) {
 
-                for(int n = -radius; n <= radius; n++) {
+                for (int n = -radius; n <= radius; n++) {
 
-                    if(cycle.execute(player, world, x, y + i, z + n, side, id))
+                    if (cycle.execute(player, world, x, y + i, z + n, side, id))
                         isSuccessful = true;
                 }
             }
         }
 
-        if(side.offsetY != 0) {
+        if (side.offsetY != 0) {
 
-            for(int i = -radius; i <= radius; i++) {
+            for (int i = -radius; i <= radius; i++) {
 
-                for(int n = -radius; n <= radius; n++) {
+                for (int n = -radius; n <= radius; n++) {
 
-                    if(cycle.execute(player, world, x + i, y, z + n, side, id))
+                    if (cycle.execute(player, world, x + i, y, z + n, side, id))
                         isSuccessful = true;
                 }
             }
         }
 
-        if(side.offsetZ != 0) {
+        if (side.offsetZ != 0) {
 
-            for(int i = -radius; i <= radius; i++) {
+            for (int i = -radius; i <= radius; i++) {
 
-                for(int n = -radius; n <= radius; n++) {
+                for (int n = -radius; n <= radius; n++) {
 
-                    if(cycle.execute(player, world, x + i, y + n, z, side, id))
+                    if (cycle.execute(player, world, x + i, y + n, z, side, id))
                         isSuccessful = true;
                 }
             }
@@ -325,29 +312,29 @@ public class UtilBlock {
     public static boolean cycle3DBlock(EntityLivingBase player, World world, int x, int y, int z, ForgeDirection side, int radius, IBlockCycle cycle, int id) {
         boolean isSuccessful = false;
 
-        if(side.offsetX != 0) {
+        if (side.offsetX != 0) {
 
-            for(int i = -radius; i <= radius; i++) {
+            for (int i = -radius; i <= radius; i++) {
 
-                if(UtilBlock.cycle2DBlock(player, world, x + i, y, z, side, radius, cycle, id))
+                if (UtilBlock.cycle2DBlock(player, world, x + i, y, z, side, radius, cycle, id))
                     isSuccessful = true;
             }
         }
 
-        if(side.offsetY != 0) {
+        if (side.offsetY != 0) {
 
-            for(int i = -radius; i <= radius; i++) {
+            for (int i = -radius; i <= radius; i++) {
 
-                if(UtilBlock.cycle2DBlock(player, world, x, y + i, z, side, radius, cycle, id))
+                if (UtilBlock.cycle2DBlock(player, world, x, y + i, z, side, radius, cycle, id))
                     isSuccessful = true;
             }
         }
 
-        if(side.offsetZ != 0) {
+        if (side.offsetZ != 0) {
 
-            for(int i = -radius; i <= radius; i++) {
+            for (int i = -radius; i <= radius; i++) {
 
-                if(UtilBlock.cycle2DBlock(player, world, x, y, z + 1, side, radius, cycle, id))
+                if (UtilBlock.cycle2DBlock(player, world, x, y, z + 1, side, radius, cycle, id))
                     isSuccessful = true;
             }
         }
@@ -357,49 +344,49 @@ public class UtilBlock {
     public static boolean cycle3DBlock(EntityLivingBase player, World world, int x, int y, int z, ForgeDirection side, int radius, int distance, IBlockCycle cycle, int id) {
         boolean isSuccessful = false;
 
-        for(int i = 0; i < distance; i++) {
+        for (int i = 0; i < distance; i++) {
 
-            if(side.offsetX != 0) {
+            if (side.offsetX != 0) {
 
-                if(side.offsetX > 0) {
+                if (side.offsetX > 0) {
 
-                    if(UtilBlock.cycle2DBlock(player, world, x - i, y, z, side, radius, cycle, id))
+                    if (UtilBlock.cycle2DBlock(player, world, x - i, y, z, side, radius, cycle, id))
                         isSuccessful = true;
                 }
 
-                if(side.offsetX < 0) {
+                if (side.offsetX < 0) {
 
-                    if(UtilBlock.cycle2DBlock(player, world, x + i, y, z, side, radius, cycle, id))
-                        isSuccessful = true;
-                }
-            }
-
-            if(side.offsetY != 0) {
-
-                if(side.offsetY > 0) {
-
-                    if(UtilBlock.cycle2DBlock(player, world, x, y - i, z, side, radius, cycle, id))
-                        isSuccessful = true;
-                }
-
-                if(side.offsetY < 0) {
-
-                    if(UtilBlock.cycle2DBlock(player, world, x, y + i, z, side, radius, cycle, id))
+                    if (UtilBlock.cycle2DBlock(player, world, x + i, y, z, side, radius, cycle, id))
                         isSuccessful = true;
                 }
             }
 
-            if(side.offsetZ != 0) {
+            if (side.offsetY != 0) {
 
-                if(side.offsetZ > 0) {
+                if (side.offsetY > 0) {
 
-                    if(UtilBlock.cycle2DBlock(player, world, x, y, z - i, side, radius, cycle, id))
+                    if (UtilBlock.cycle2DBlock(player, world, x, y - i, z, side, radius, cycle, id))
                         isSuccessful = true;
                 }
 
-                if(side.offsetZ < 0) {
+                if (side.offsetY < 0) {
 
-                    if(UtilBlock.cycle2DBlock(player, world, x, y, z + i, side, radius, cycle, id))
+                    if (UtilBlock.cycle2DBlock(player, world, x, y + i, z, side, radius, cycle, id))
+                        isSuccessful = true;
+                }
+            }
+
+            if (side.offsetZ != 0) {
+
+                if (side.offsetZ > 0) {
+
+                    if (UtilBlock.cycle2DBlock(player, world, x, y, z - i, side, radius, cycle, id))
+                        isSuccessful = true;
+                }
+
+                if (side.offsetZ < 0) {
+
+                    if (UtilBlock.cycle2DBlock(player, world, x, y, z + i, side, radius, cycle, id))
                         isSuccessful = true;
                 }
             }
