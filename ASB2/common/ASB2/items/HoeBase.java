@@ -1,22 +1,21 @@
 package ASB2.items;
 
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.item.EnumToolMaterial;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemHoe;
 
 public class HoeBase extends ItemHoe {
 
     String iconLocation;
     
-    public HoeBase(int id, EnumToolMaterial material, String iconLocation) {
-        super(id, material);
+    public HoeBase(ToolMaterial material, String iconLocation) {
+        super( material);
         
         this.iconLocation = iconLocation;
         this.setUnlocalizedName(iconLocation);
     }
 
     @Override
-    public void registerIcons(IconRegister iconRegister){
+    public void registerIcons(IIconRegister iconRegister){
 
         itemIcon = iconRegister.registerIcon(iconLocation);
     }

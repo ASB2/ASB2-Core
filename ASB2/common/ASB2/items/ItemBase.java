@@ -1,10 +1,24 @@
 package ASB2.items;
 
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 public class ItemBase extends Item {
-
-    public ItemBase(int id) {
-        super(id);
+    
+    String ign = "";
+    
+    public ItemBase() {
+    }
+    
+    public ItemBase setDisplayName(String name) {
+        
+        ign = name;
+        return this;
+    }
+    
+    @Override
+    public String getItemStackDisplayName(ItemStack itemStack) {
+        
+        return ign;
     }
 }

@@ -11,10 +11,8 @@ import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.NetworkMod;
 
 @Mod(modid = ASB2Core.MODDID, name = ASB2Core.NAME, version = ASB2Core.VERSION, dependencies = ASB2Core.FORGE_VERSION)
-@NetworkMod(clientSideRequired = true, serverSideRequired = false)
 
 public final class ASB2Core {
 
@@ -34,7 +32,7 @@ public final class ASB2Core {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
 
-        logger.setParent(FMLLog.getLogger());
+//        logger.setParent(FMLLog.getLogger());
 
         logger.log(Level.INFO," Beginning destruction of known world");
 

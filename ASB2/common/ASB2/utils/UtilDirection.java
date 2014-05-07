@@ -1,32 +1,32 @@
 package ASB2.utils;
 
+import static net.minecraftforge.common.util.ForgeDirection.DOWN;
+import static net.minecraftforge.common.util.ForgeDirection.EAST;
+import static net.minecraftforge.common.util.ForgeDirection.NORTH;
+import static net.minecraftforge.common.util.ForgeDirection.SOUTH;
+import static net.minecraftforge.common.util.ForgeDirection.UNKNOWN;
+import static net.minecraftforge.common.util.ForgeDirection.UP;
+import static net.minecraftforge.common.util.ForgeDirection.WEST;
+
 import java.util.Random;
 
-import ASB2.vector.Vector3;
-
+import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
-
-import static net.minecraftforge.common.ForgeDirection.UP;
-import static net.minecraftforge.common.ForgeDirection.DOWN;
-import static net.minecraftforge.common.ForgeDirection.NORTH;
-import static net.minecraftforge.common.ForgeDirection.SOUTH;
-import static net.minecraftforge.common.ForgeDirection.WEST;
-import static net.minecraftforge.common.ForgeDirection.EAST;
-import static net.minecraftforge.common.ForgeDirection.UNKNOWN;
+import net.minecraftforge.common.util.ForgeDirection;
+import ASB2.vector.Vector3;
 
 public class UtilDirection {
-
+    
     public static ForgeDirection translateDirectionToRandomRightAngle(ForgeDirection direction) {
-
+        
         int rand = new Random().nextInt(4);
-
-        if(direction == ForgeDirection.UP || direction == ForgeDirection.DOWN) {
-
-            switch(rand) {
-
+        
+        if (direction == ForgeDirection.UP || direction == ForgeDirection.DOWN) {
+            
+            switch (rand) {
+            
                 case 0:
                     return NORTH;
                 case 1:
@@ -39,11 +39,11 @@ public class UtilDirection {
                     return UNKNOWN;
             }
         }
-
-        if(direction == ForgeDirection.NORTH || direction == ForgeDirection.SOUTH) {
-
-            switch(rand) {
-
+        
+        if (direction == ForgeDirection.NORTH || direction == ForgeDirection.SOUTH) {
+            
+            switch (rand) {
+            
                 case 0:
                     return UP;
                 case 1:
@@ -56,11 +56,11 @@ public class UtilDirection {
                     return UNKNOWN;
             }
         }
-
-        if(direction == ForgeDirection.WEST || direction == ForgeDirection.EAST) {
-
-            switch(rand) {
-
+        
+        if (direction == ForgeDirection.WEST || direction == ForgeDirection.EAST) {
+            
+            switch (rand) {
+            
                 case 0:
                     return UP;
                 case 1:
@@ -74,64 +74,65 @@ public class UtilDirection {
             }
         }
         return ForgeDirection.UNKNOWN;
-
+        
     }
-
+    
     public static int[] translateDirectionToCoords(ForgeDirection direction, TileEntity tile) {
-
+        
         return translateDirectionToCoords(direction, tile.xCoord, tile.yCoord, tile.zCoord);
     }
-
+    
     public static int[] translateDirectionToCoords(ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
-
-        return new int[]{xCoord + direction.offsetX, yCoord + direction.offsetY, zCoord + direction.offsetZ};
+        
+        return new int[] { xCoord + direction.offsetX, yCoord + direction.offsetY, zCoord + direction.offsetZ };
     }
-
+    
     public static TileEntity translateDirectionToTile(TileEntity tile, IBlockAccess world, ForgeDirection direction) {
-
-        return translateDirectionToTile(world, direction, tile.xCoord, tile.yCoord, tile.zCoord);}
-
+        
+        return translateDirectionToTile(world, direction, tile.xCoord, tile.yCoord, tile.zCoord);
+    }
+    
     public static TileEntity translateDirectionToTile(Vector3 vector, IBlockAccess world, ForgeDirection direction) {
         
         return translateDirectionToTile(world, direction, vector.intX(), vector.intY(), vector.intZ());
     }
-
+    
     public static TileEntity translateDirectionToTile(IBlockAccess world, ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
-
+        
         int[] coords = UtilDirection.translateDirectionToCoords(direction, xCoord, yCoord, zCoord);
-        return world.getBlockTileEntity(coords[0], coords[1], coords[2]);
+        return world.getTileEntity(coords[0], coords[1], coords[2]);
     }
-
-    public static int translateDirectionToBlockId(IBlockAccess world, ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
-
+    
+    public static Block translateDirectionToBlock(IBlockAccess world, ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
+        
         int[] coords = UtilDirection.translateDirectionToCoords(direction, xCoord, yCoord, zCoord);
-
-        return world.getBlockId(coords[0], coords[1], coords[2]);
+        
+        return world.getBlock(coords[0], coords[1], coords[2]);
     }
-
-    public static int translateDirectionToBlockId(World world, ForgeDirection direction, TileEntity tile) {
-
-        return translateDirectionToBlockId(world, direction, tile.xCoord, tile.yCoord, tile.zCoord);
+    
+    public static Block translateDirectionToBlock(IBlockAccess world, ForgeDirection direction, TileEntity tile) {
+        
+        return translateDirectionToBlock(world, direction, tile.xCoord, tile.yCoord, tile.zCoord);
     }
-
-    public static int translateDirectionToBlockMeta(World world, ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
-
+    
+    public static int translateDirectionToBlockMeta(IBlockAccess world, ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
+        
         int[] coords = UtilDirection.translateDirectionToCoords(direction, xCoord, yCoord, zCoord);
-
+        
         return world.getBlockMetadata(coords[0], coords[1], coords[2]);
     }
-
-    public static int translateDirectionToBlockMeta(World world, ForgeDirection direction, TileEntity tile) {
-
+    
+    public static int translateDirectionToBlockMeta(IBlockAccess world, ForgeDirection direction, TileEntity tile) {
+        
         int[] coords = UtilDirection.translateDirectionToCoords(direction, tile.xCoord, tile.yCoord, tile.zCoord);
-
+        
         return world.getBlockMetadata(coords[0], coords[1], coords[2]);
     }
-
+    
     public static boolean translateDirectionToIsBlockSolid(World world, ForgeDirection direction, int xCoord, int yCoord, int zCoord) {
-
+        
         int[] coords = UtilDirection.translateDirectionToCoords(direction, xCoord, yCoord, zCoord);
-
-        return world.isBlockSolidOnSide(coords[0], coords[1], coords[2], direction);
+        
+        return world.isSideSolid(coords[0], coords[1], coords[2], direction);
     }
 }

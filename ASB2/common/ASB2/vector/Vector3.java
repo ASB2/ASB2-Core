@@ -14,7 +14,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class Vector3 implements Cloneable {
     
@@ -122,18 +122,18 @@ public class Vector3 implements Cloneable {
      * @param world
      * @return
      */
-    public int getBlockID(IBlockAccess world) {
+    public Block getBlock(IBlockAccess world) {
         
-        return world.getBlockId(this.intX(), this.intY(), this.intZ());
+        return world.getBlock(this.intX(), this.intY(), this.intZ());
     }
     
-    public int getBlockID(World world) {
+    public Block getBlock(World world) {
         
         if (world.blockExists(this.intX(), this.intY(), this.intZ())) {
             
-            return world.getBlockId(this.intX(), this.intY(), this.intZ());
+            return world.getBlock(this.intX(), this.intY(), this.intZ());
         }
-        return 0;
+        return null;
     }
     
     public int getBlockMetadata(IBlockAccess world) {
@@ -143,57 +143,45 @@ public class Vector3 implements Cloneable {
     
     public TileEntity getTileEntity(IBlockAccess world) {
         
-        return world.getBlockTileEntity(this.intX(), this.intY(), this.intZ());
+        return world.getTileEntity(this.intX(), this.intY(), this.intZ());
     }
     
     public TileEntity getTileEntity(World world) {
         
         if (world.blockExists(this.intX(), this.intY(), this.intZ())) {
             
-            return world.getBlockTileEntity(this.intX(), this.intY(), this.intZ());
-        } else
+            return world.getTileEntity(this.intX(), this.intY(), this.intZ());
+        }
+        else
             return null;
     }
     
     public Material getBlockMaterial(IBlockAccess world) {
         
-        return world.getBlockMaterial(this.intX(), this.intY(), this.intZ());
+        return world.getBlock(this.intX(), this.intY(), this.intZ()).getMaterial();
     }
     
     public Material getBlockMaterial(World world) {
         
         if (world.blockExists(this.intX(), this.intY(), this.intZ())) {
             
-            return world.getBlockMaterial(this.intX(), this.intY(), this.intZ());
-        } else
+            return world.getBlock(this.intX(), this.intY(), this.intZ()).getMaterial();
+        }
+        else
             return null;
     }
     
-    public Block getBlock(IBlockAccess world) {
-        
-        return Block.blocksList[this.getBlockID(world)];
-    }
-    
-    public Block getBlock(World world) {
-        
-        if (world.blockExists(this.intX(), this.intY(), this.intZ())) {
-            
-            return Block.blocksList[this.getBlockID(world)];
-        } else
-            return null;
-    }
-    
-    public boolean setBlock(World world, int id, int metadata, int notify) {
+    public boolean setBlock(World world, Block id, int metadata, int notify) {
         
         return world.setBlock(this.intX(), this.intY(), this.intZ(), id, metadata, notify);
     }
     
-    public boolean setBlock(World world, int id, int metadata) {
+    public boolean setBlock(World world, Block id, int metadata) {
         
         return this.setBlock(world, id, metadata, 3);
     }
     
-    public boolean setBlock(World world, int id) {
+    public boolean setBlock(World world, Block id) {
         
         return this.setBlock(world, id, 0);
     }
@@ -456,6 +444,10 @@ public class Vector3 implements Cloneable {
     
     public boolean intEquals(Vector3 vec) {
         return vec != null ? (this.intX() == vec.intX() && this.intY() == vec.intY() && this.intZ() == vec.intZ()) : false;
+    }
+    
+    public boolean intEquals(TileEntity vec) {
+        return vec != null ? (this.intX() == vec.xCoord && this.intY() == vec.yCoord && this.intZ() == vec.zCoord) : false;
     }
     
     @Override

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class Cuboid implements ICuboidIterator {
 
@@ -55,6 +56,13 @@ public class Cuboid implements ICuboidIterator {
 
     public Cuboid(Cuboid cuboid) {
         this(cuboid.getCore(), cuboid.getOppositeCore());
+
+        if (!cuboid.needsRecalculate) {
+
+            this.composingBlocks = cuboid.composingBlocks;
+            this.cornerBlocks = cuboid.cornerBlocks;
+            this.edges = cuboid.edges;
+        }
     }
 
     public void setXSize(int newX) {
@@ -178,7 +186,7 @@ public class Cuboid implements ICuboidIterator {
         return opposite.clone();
     }
 
-    /*
+    /**
      * ASB2 shouldn't touch this method. It is fine how it is;
      */
     public boolean iterate(ICuboidIterator iterator, Object... providedInfo) {
@@ -189,7 +197,7 @@ public class Cuboid implements ICuboidIterator {
 
                 for (int z = 0; z <= this.zSize; z++) {
 
-                    if (!iterator.iterate(this.corner.clone().add(new Vector3(xNeg ? x * -1 : x, yNeg ? y * -1 : y, zNeg ? z * -1 : z)), providedInfo)) {
+                    if (!iterator.iterate(this.getCore().add(xNeg ? x * -1 : x, yNeg ? y * -1 : y, zNeg ? z * -1 : z), providedInfo)) {
 
                         return false;
                     }
@@ -199,7 +207,7 @@ public class Cuboid implements ICuboidIterator {
         return true;
     }
 
-    /*
+    /**
      * Returns a set of all the blocks that make up this cuboid
      */
     public Set<Vector3> getComposingBlock() {
@@ -210,7 +218,7 @@ public class Cuboid implements ICuboidIterator {
         return composingBlocks;
     }
 
-    /*
+    /**
      * Returns a the corner block of this cuboid. Max 8 Blocks Min 1 Block
      */
 
@@ -222,7 +230,7 @@ public class Cuboid implements ICuboidIterator {
         return cornerBlocks;
     }
 
-    /*
+    /**
      * Returns an array containing all edjes of the area.
      */
 
@@ -252,10 +260,39 @@ public class Cuboid implements ICuboidIterator {
         return blocks;
     }
 
+    /**
+     * Should get all the blocks on a certain side of the collection of blocks
+     * @param face
+     * @return
+     */
+    public Cuboid getFace(ForgeDirection face) {
+
+        switch (face) {
+
+            case DOWN:
+                break;
+            case UP:
+                break;
+            case EAST:
+                break;
+            case WEST:
+                break;
+            case NORTH:
+                break;
+            case SOUTH:
+                break;
+            default:
+                break;
+
+        }
+        return this;
+    }
+
     @Override
     public boolean iterate(Vector3 vector, Object... providedInfo) {
 
         if ((int) providedInfo[0] == 0) {
+
             composingBlocks.add(vector);
         }
         return true;
@@ -308,8 +345,8 @@ public class Cuboid implements ICuboidIterator {
 
     public NBTTagCompound save(NBTTagCompound tag) {
 
-        tag.setCompoundTag("coreVector", this.getCore().writeToNBT(new NBTTagCompound()));
-        tag.setCompoundTag("coreOpposingVector", this.getOppositeCore().writeToNBT(new NBTTagCompound()));
+        tag.setTag("coreVector", this.getCore().writeToNBT(new NBTTagCompound()));
+        tag.setTag("coreOpposingVector", this.getOppositeCore().writeToNBT(new NBTTagCompound()));
         return tag;
     }
 
